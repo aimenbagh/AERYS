@@ -80,7 +80,7 @@ function formCreate(){
     <div class="h2">Créer une activité</div>
     <div class="lead mt8 mb24">Choisissez un format, puis renseignez les informations pédagogiques.</div>
     <h3 class="section-title mb16">Format de l\u2019activité</h3>
-    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px" id="formatGrid">${formats}</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px" id="formatGrid">${formats}</div>
     <div class="card mt24">
       <h3 class="section-title mb16">Informations générales</h3>
       <div class="grid g2" style="gap:16px">

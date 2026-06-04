@@ -381,7 +381,7 @@ function mgrRequest(){
         <input class="inp flat" type="text" value="Gestion des réclamations clients difficiles"></div>
 
       <div class="field"><label>2. Type de formation souhaité</label>
-        <div class="type-grid">${types}</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px">${types}</div></div>
 
       <div class="field"><label>3. Objectif</label>
         <textarea class="inp" maxlength="200" placeholder="Décrivez l’objectif de la formation...">Renforcer la capacité des équipes à gérer les réclamations complexes avec professionnalisme.</textarea>
