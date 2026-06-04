@@ -180,8 +180,11 @@ function completeVideo(pts){
 let _quizAnswered = false;
 function empActivityDetail(){
   const a = DATA.activities.find(x => x.id === STATE.activeActivity);
-  if(a && a.type === 'Vidéo') return empVideoDetail();
-  if(a && a.id === 'j1') return empMissionHyatt();
+  if(a && a.type === 'Vidéo')       return empVideoDetail();
+  if(a && a.id === 'j1')            return empMissionHyatt();
+  if(a && a.id === 'd1')            return empDevinette();
+  if(a && a.id === 's1')            return empSimulation();
+  if(a && a.id === 'm1')            return empMicroLearning();
   return empActivityDetail_quiz();
 }
 function empActivityDetail_quiz(){
@@ -271,7 +274,17 @@ function nextQuiz(){
   q.current++;
   render();
 }
-function openActivity(id){ STATE.tab='emp-activity-detail'; STATE.activeActivity=id; _videoCompleted=false; render(); }
+function openActivity(id){
+  STATE.tab='emp-activity-detail';
+  STATE.activeActivity=id;
+  _videoCompleted=false;
+  // Reset all mini-game states on each open
+  if(typeof initRiddle === 'function')  initRiddle();
+  if(typeof initSim === 'function')     initSim();
+  if(typeof initML === 'function')      initML();
+  if(typeof initMission === 'function'){ initMission(); }
+  render();
+}
 
 // ---- Planning state ----
 let _planWeekOffset = 0;  // 0 = current week, -1 = prev, +1 = next

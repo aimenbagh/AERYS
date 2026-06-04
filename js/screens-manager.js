@@ -99,9 +99,9 @@ function mgrTeams(){
       <h3 class="section-title">Vue par employé — Réception <span class="badge-pill badge-violet">24 employés</span></h3>
       <button class="btn btn-ghost btn-sm" onclick="toast('Export en cours…')">${icon('download')} Exporter</button>
     </div>
-    <div class="card" style="padding:6px 8px;overflow-x:auto">
-      <table class="tbl"><thead><tr><th>Employé</th><th>Poste</th><th>Progression</th><th>Score</th><th>Badges</th><th>Statut</th><th></th></tr></thead>
-      <tbody>${rows}</tbody></table>
+    <div class="card" style="padding:6px 8px">
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Employé</th><th>Poste</th><th>Progression</th><th>Score</th><th>Badges</th><th>Statut</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
     </div>
     <div class="grid g2 mt24" style="gap:18px">
       <div class="card">
@@ -492,9 +492,9 @@ function mgrDeptDetail(){
       <h3 class="section-title">Employés — ${d.name}</h3>
       <button class="btn btn-ghost btn-sm" onclick="toast('Export en cours…')">${icon('download')} Exporter</button>
     </div>
-    <div class="card" style="padding:6px 8px;overflow-x:auto">
-      <table class="tbl"><thead><tr><th>Employé</th><th>Poste</th><th>Progression</th><th>Score</th><th>Statut</th><th></th></tr></thead>
-      <tbody>${rows}</tbody></table>
+    <div class="card" style="padding:6px 8px">
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Employé</th><th>Poste</th><th>Progression</th><th>Score</th><th>Statut</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
     </div>
     <div class="flex gap12 mt24" style="flex-wrap:wrap">
       <button class="btn btn-primary" style="flex:1;min-width:200px" onclick="setTab('mgr-assign')">${icon('cap')} Assigner une formation</button>

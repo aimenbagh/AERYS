@@ -367,7 +367,7 @@ function answerMission(choiceId){
       <div class="card flat mb16" style="background:${isCorrect?'var(--green-light)':'var(--red-light)'};border-color:${isCorrect?'var(--green)':'var(--red)'}">
         <div style="font-weight:800;font-size:15px;color:${isCorrect?'var(--green)':'var(--red)'};margin-bottom:6px">${isCorrect ? '✅ Excellente réponse !' : '❌ Pas tout à fait…'}</div>
         <div style="font-size:13.5px;line-height:1.5;color:var(--navy)">${choice ? choice.feedback : ''}</div>
-        ${pts > 0 ? `<div style="margin-top:8px;font-weight:800;color:var(--violet);font-family:var(--font-display)">+${pts} pts</div>` : ''}
+        ${pts > 0 ? '<div style="margin-top:8px;font-weight:800;color:var(--violet);font-family:var(--font-display)">+'+pts+' pts</div>' : ''}
       </div>
       <div class="card flat mb20" style="background:var(--violet-soft);border-color:var(--violet-light);display:flex;align-items:flex-start;gap:12px">
         <div style="font-size:18px;flex:none;margin-top:2px">💡</div>

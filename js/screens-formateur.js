@@ -208,9 +208,9 @@ function formTracking(){
       ${[['users','Apprenants actifs','156','it-violet-soft'],['trend','Taux de réussite','87%','it-green'],['clock','En difficulté','12','it-red'],['cap','Certificats émis','64','it-gold-soft']].map(s=>`
         <div class="stat-card"><div class="sc-icon ${s[3]}">${icon(s[0])}</div><div class="sc-value mt12" style="font-size:24px">${s[2]}</div><div class="sc-label">${s[1]}</div></div>`).join('')}
     </div>
-    <div class="card" style="padding:6px 8px;overflow-x:auto">
-      <table class="tbl"><thead><tr><th>Apprenant</th><th>Département</th><th>Progression</th><th>Score</th><th>Statut</th><th>Action</th></tr></thead>
-      <tbody>${rows}</tbody></table>
+    <div class="card" style="padding:6px 8px">
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Apprenant</th><th>Département</th><th>Progression</th><th>Score</th><th>Statut</th><th>Action</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
     </div>
     <div class="card flat mt16 flex items-center between" style="background:var(--orange-light);border-color:#f0d9b0">
       <div class="flex items-center gap12"><span class="txt-orange">${icon('alertuser')}</span><div class="lead" style="color:var(--navy)">3 apprenants rencontrent des difficultés sur la simulation « Gestion des réclamations ».</div></div>
