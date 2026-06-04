@@ -50,17 +50,111 @@ const DATA = {
 
   // ---- Quiz interactif ----
   quiz: {
-    title:'Accueil client parfait', total:10, current:3,
-    question:'Quelle est la première chose à faire lorsqu\u2019un client arrive à la réception ?',
-    options:[
-      { l:'A', t:'Le laisser attendre quelques secondes', correct:false },
-      { l:'B', t:'Le saluer chaleureusement et établir un contact visuel', correct:true },
-      { l:'C', t:'Demander directement sa réservation', correct:false },
-      { l:'D', t:'Appeler un collègue pour l\u2019aider', correct:false },
-    ],
+    title:'Accueil client parfait', total:10, current:1, score:0,
     points:10,
-    explanation:'Un bon accueil commence par un sourire et un contact visuel.',
-    badge:{ name:'Accueil Pro', progress:'2 / 5 bonnes réponses', pct:40 },
+    badge:{ name:'Accueil Pro', progress:'0 / 10 bonnes réponses', pct:0 },
+    questions:[
+      {
+        question:'Quelle est la première chose à faire lorsqu\u2019un client arrive à la réception ?',
+        options:[
+          { l:'A', t:'Le laisser attendre quelques secondes', correct:false },
+          { l:'B', t:'Le saluer chaleureusement et établir un contact visuel', correct:true },
+          { l:'C', t:'Demander directement sa réservation', correct:false },
+          { l:'D', t:'Appeler un coll\u00e8gue pour l\u2019aider', correct:false },
+        ],
+        explanation:'Un bon accueil commence par un sourire et un contact visuel imm\u00e9diat.',
+      },
+      {
+        question:'Quelle information doit \u00eatre v\u00e9rifi\u00e9e avant de remettre la cl\u00e9 de la chambre ?',
+        options:[
+          { l:'A', t:'Le num\u00e9ro de t\u00e9l\u00e9phone du client', correct:false },
+          { l:'B', t:'L\u2019identit\u00e9 et la r\u00e9servation du client', correct:true },
+          { l:'C', t:'Son moyen de transport', correct:false },
+          { l:'D', t:'Son programme touristique', correct:false },
+        ],
+        explanation:'V\u00e9rifier l\u2019identit\u00e9 et la r\u00e9servation garantit la s\u00e9curit\u00e9 et \u00e9vite les erreurs d\u2019attribution de chambre.',
+      },
+      {
+        question:'Quelle est la meilleure attitude face \u00e0 une r\u00e9clamation client ?',
+        options:[
+          { l:'A', t:'Se justifier imm\u00e9diatement', correct:false },
+          { l:'B', t:'Ignorer le probl\u00e8me', correct:false },
+          { l:'C', t:'\u00c9couter attentivement et proposer une solution', correct:true },
+          { l:'D', t:'Rediriger le client vers un autre service', correct:false },
+        ],
+        explanation:'L\u2019\u00e9coute active et une solution rapide transforment une plainte en exp\u00e9rience positive.',
+      },
+      {
+        question:'Apr\u00e8s combien de sonneries un appel doit-il id\u00e9alement \u00eatre pris \u00e0 la r\u00e9ception ?',
+        options:[
+          { l:'A', t:'6 sonneries', correct:false },
+          { l:'B', t:'5 sonneries', correct:false },
+          { l:'C', t:'3 sonneries maximum', correct:true },
+          { l:'D', t:'8 sonneries', correct:false },
+        ],
+        explanation:'D\u00e9crocher avant la 3\u00e8me sonnerie est le standard professionnel de l\u2019h\u00f4tellerie.',
+      },
+      {
+        question:'Quel \u00e9l\u00e9ment influence le plus la premi\u00e8re impression d\u2019un client ?',
+        options:[
+          { l:'A', t:'Le prix de la chambre', correct:false },
+          { l:'B', t:'L\u2019accueil et le sourire du personnel', correct:true },
+          { l:'C', t:'Le restaurant', correct:false },
+          { l:'D', t:'Le parking', correct:false },
+        ],
+        explanation:'La premi\u00e8re impression se forme en quelques secondes et repose avant tout sur le comportement du personnel.',
+      },
+      {
+        question:'Que doit faire un r\u00e9ceptionniste avec les informations personnelles des clients ?',
+        options:[
+          { l:'A', t:'Les partager avec les coll\u00e8gues', correct:false },
+          { l:'B', t:'Les afficher au comptoir', correct:false },
+          { l:'C', t:'Les conserver de mani\u00e8re confidentielle', correct:true },
+          { l:'D', t:'Les communiquer aux autres clients', correct:false },
+        ],
+        explanation:'La confidentialit\u00e9 des donn\u00e9es clients est une obligation l\u00e9gale (RGPD) et un gage de confiance.',
+      },
+      {
+        question:'Lors d\u2019un check-in, que peut proposer le r\u00e9ceptionniste pour augmenter le chiffre d\u2019affaires ?',
+        options:[
+          { l:'A', t:'Ignorer les services compl\u00e9mentaires', correct:false },
+          { l:'B', t:'Un surclassement ou des services additionnels', correct:true },
+          { l:'C', t:'Une r\u00e9duction syst\u00e9matique', correct:false },
+          { l:'D', t:'Une chambre moins ch\u00e8re', correct:false },
+        ],
+        explanation:'L\u2019upselling au check-in est une opportunit\u00e9 de g\u00e9n\u00e9rer des revenus tout en am\u00e9liorant l\u2019exp\u00e9rience client.',
+      },
+      {
+        question:'Que doit faire un employ\u00e9 s\u2019il constate une situation inhabituelle dans l\u2019h\u00f4tel ?',
+        options:[
+          { l:'A', t:'Ne rien signaler', correct:false },
+          { l:'B', t:'Attendre la fin du service', correct:false },
+          { l:'C', t:'Informer imm\u00e9diatement son responsable', correct:true },
+          { l:'D', t:'En parler aux clients', correct:false },
+        ],
+        explanation:'Signaler rapidement toute anomalie est essentiel pour la s\u00e9curit\u00e9 des clients et du personnel.',
+      },
+      {
+        question:'Quel service est responsable de la propret\u00e9 des chambres ?',
+        options:[
+          { l:'A', t:'R\u00e9ception', correct:false },
+          { l:'B', t:'Restauration', correct:false },
+          { l:'C', t:'Housekeeping / \u00c9tages', correct:true },
+          { l:'D', t:'Comptabilit\u00e9', correct:false },
+        ],
+        explanation:'Le service Housekeeping est d\u00e9di\u00e9 \u00e0 l\u2019entretien et \u00e0 la propret\u00e9 des chambres et des espaces communs.',
+      },
+      {
+        question:'Quel est l\u2019objectif principal de chaque employ\u00e9 d\u2019un h\u00f4tel ?',
+        options:[
+          { l:'A', t:'Finir son service rapidement', correct:false },
+          { l:'B', t:'R\u00e9duire les d\u00e9penses du client', correct:false },
+          { l:'C', t:'Garantir la satisfaction et la fid\u00e9lisation du client', correct:true },
+          { l:'D', t:'Vendre uniquement des chambres', correct:false },
+        ],
+        explanation:'La satisfaction client est le c\u0153ur du m\u00e9tier h\u00f4telier : un client satisfait revient et recommande l\u2019\u00e9tablissement.',
+      },
+    ],
   },
 
   // ---- Planning employé ----

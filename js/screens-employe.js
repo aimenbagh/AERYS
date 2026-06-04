@@ -101,11 +101,93 @@ function empActivities(){
 }
 function setActFilter(f){ _actFilter=f; render(); }
 
+// ---- Page vidéo ----
+let _videoCompleted = false;
+function empVideoDetail(){
+  const a = DATA.activities.find(x => x.id === STATE.activeActivity);
+  if(!a) return empActivityDetail_quiz();
+  const youtubeId = '23-GjBT7zbw';
+  const relatedActivities = DATA.activities.filter(x => x.id !== a.id).slice(0,2);
+  return `
+    <div class="flex items-center between mb24">
+      <button class="bell" onclick="setTab('emp-activities')" style="width:42px;height:42px">${icon('arrowleft')}</button>
+      <div style="text-align:center"><div class="h3">Activité</div>
+        <span class="badge-pill badge-violet" style="margin-top:6px">Vidéo</span></div>
+      <div class="flex items-center gap12">${bell()}<div onclick="setProfileTab()" style="cursor:pointer">${avatarEl(STATE.user,46,true)}</div></div>
+    </div>
+
+    <!-- Video embed -->
+    <div style="border-radius:var(--r-lg);overflow:hidden;background:var(--navy);box-shadow:var(--sh-lg);margin-bottom:20px;position:relative;aspect-ratio:16/9;">
+      <iframe
+        src="https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&color=white"
+        title="${a.title}"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        style="width:100%;height:100%;position:absolute;top:0;left:0;"
+      ></iframe>
+    </div>
+
+    <!-- Meta badges -->
+    <div class="flex items-center gap12 mb20" style="flex-wrap:wrap">
+      <span class="badge-pill badge-violet">${a.type}</span>
+      <span class="badge-pill" style="background:var(--grey-100);color:var(--grey-text)">${icon('clock','width="13" height="13" style="display:inline;vertical-align:-2px"')} ${a.meta}</span>
+      <span class="badge-pill" style="background:var(--green-light);color:var(--green)">${a.difficulty}</span>
+      <span class="badge-pill" style="background:var(--gold-light);color:var(--gold)">+${a.points} pts</span>
+    </div>
+
+    <!-- Title & description -->
+    <div class="card mb16">
+      <div class="h2 mb8" style="font-size:22px">${a.title}</div>
+      <div class="lead mb16">${a.desc}</div>
+      <div class="flex items-center gap12" style="border-top:1px solid var(--grey-100);padding-top:14px">
+        <div class="icon-tile it-violet-soft" style="flex:none;width:40px;height:40px">${icon('cap')}</div>
+        <div>
+          <div style="font-weight:700;font-size:14px">Objectif pédagogique</div>
+          <div class="lead" style="font-size:13px;margin-top:3px">Comprendre et appliquer les standards de service Hyatt en restauration pour offrir une expérience client d'excellence.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complete CTA -->
+    <button class="btn btn-primary btn-block mb16" id="videoCta" onclick="completeVideo(${a.points})">
+      ${icon('check')} Marquer comme terminé · +${a.points} pts
+    </button>
+
+    <!-- Related activities -->
+    <div class="section-title mb16">Activités similaires</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      ${relatedActivities.map(activityCard).join('')}
+    </div>
+  `;
+}
+
+function completeVideo(pts){
+  if(_videoCompleted) return;
+  _videoCompleted = true;
+  STATE.user.points = (STATE.user.points||0) + pts;
+  const btn = document.getElementById('videoCta');
+  if(btn){
+    btn.disabled = true;
+    btn.innerHTML = `${icon('check')} Activité complétée ! +${pts} pts gagnés`;
+    btn.style.background = 'var(--green)';
+    btn.style.boxShadow = '0 12px 28px rgba(31,164,99,.3)';
+  }
+  toast(`Bravo ! +${pts} points gagnés`);
+}
+
 // ---- Activité interactive (quiz) ----
 let _quizAnswered = false;
 function empActivityDetail(){
+  const a = DATA.activities.find(x => x.id === STATE.activeActivity);
+  if(a && a.type === 'Vidéo') return empVideoDetail();
+  return empActivityDetail_quiz();
+}
+function empActivityDetail_quiz(){
   const q = DATA.quiz;
-  const opts = q.options.map(o=>`
+  const idx = q.current - 1; // 0-based index
+  const currentQ = q.questions[idx];
+  const opts = currentQ.options.map(o=>`
     <div class="quiz-opt" data-correct="${o.correct}" onclick="answerQuiz(this)">
       <div class="qo-letter">${o.l}</div>
       <div class="qo-text">${o.t}</div>
@@ -115,7 +197,7 @@ function empActivityDetail(){
     <div class="flex items-center between mb24">
       <button class="bell" onclick="setTab('emp-activities')" style="width:42px;height:42px">${icon('arrowleft')}</button>
       <div style="text-align:center"><div class="h3">Activité interactive</div>
-        <span class="badge-pill badge-violet" style="margin-top:6px">${q.title.includes('Quiz')?'Quiz':'Quiz'}</span></div>
+        <span class="badge-pill badge-violet" style="margin-top:6px">Quiz</span></div>
       <div class="flex items-center gap12">${bell()}<div onclick="setProfileTab()" style="cursor:pointer">${avatarEl(STATE.user,46,true)}</div></div>
     </div>
     <div class="card" style="padding:24px">
@@ -123,10 +205,10 @@ function empActivityDetail(){
         <div class="h3">Question <span class="accent">${q.current}</span> <span class="muted" style="font-weight:600">/ ${q.total}</span></div>
       </div>
       ${progressBar(q.current/q.total*100)}
-      <h2 class="h2 mt24 mb24" style="font-size:23px">${q.question}</h2>
+      <h2 class="h2 mt24 mb24" style="font-size:23px">${currentQ.question}</h2>
       ${opts}
       <div id="quizFeedback"></div>
-      <button class="btn btn-primary mt24" id="quizNext" onclick="nextQuiz()">Question suivante ${icon('arrowright')}</button>
+      <button class="btn btn-primary mt24" id="quizNext" style="display:none" onclick="nextQuiz()">${q.current < q.total ? 'Question suivante' : 'Voir les résultats'} ${icon('arrowright')}</button>
     </div>
   `;
 }
@@ -140,40 +222,55 @@ function answerQuiz(el){
   });
   if(!correct) el.classList.add('wrong');
   const q = DATA.quiz;
+  const currentQ = q.questions[q.current - 1];
+  if(correct){ q.score++; STATE.user.points += q.points; }
+  const bonnes = q.score;
+  const pct = Math.round(bonnes / q.total * 100);
+  q.badge.progress = `${bonnes} / ${q.total} bonnes réponses`;
+  q.badge.pct = pct;
   const fb = document.getElementById('quizFeedback');
   fb.innerHTML = `
     <div class="card flat mt16 flex items-center gap12" style="background:${correct?'var(--green-light)':'var(--red-light)'};border-color:${correct?'var(--green)':'var(--red)'}">
-      <div class="icon-tile ${correct?'it-green':'it-red'}" style="width:46px;height:46px;background:${correct?'var(--green)':'var(--red)'};color:#fff">${icon(correct?'check':'plus','transform=\"rotate(45)\"')}</div>
+      <div class="icon-tile ${correct?'it-green':'it-red'}" style="width:46px;height:46px;background:${correct?'var(--green)':'var(--red)'};color:#fff">${icon(correct?'check':'plus','transform="rotate(45)"')}</div>
       <div><div style="font-weight:800;color:${correct?'var(--green)':'var(--red)'};font-size:17px;font-family:var(--font-display)">${correct?'Bonne réponse !':'Pas tout à fait...'}</div>
       <div class="accent" style="font-weight:800">+${correct?q.points:0} points</div></div>
     </div>
     <div class="card flat mt12 flex items-center gap12" style="background:var(--violet-soft);border-color:var(--violet-light)">
       <div class="icon-tile it-violet" style="width:46px;height:46px">${icon('bulb')}</div>
-      <div class="lead" style="color:var(--navy)">${q.explanation}</div>
+      <div class="lead" style="color:var(--navy)">${currentQ.explanation}</div>
     </div>
     <div class="card flat mt12 flex items-center gap12">
       <div class="icon-tile it-violet" style="width:46px;height:46px">${icon('shieldstar')}</div>
       <div style="flex:1"><div style="font-weight:700">Badge possible : <span class="accent">${q.badge.name}</span></div>
         <div class="lead" style="font-size:13px;margin:4px 0">${q.badge.progress}</div>${progressBar(q.badge.pct)}</div>
     </div>`;
-  if(correct) STATE.user.points += q.points;
+  const btn = document.getElementById('quizNext');
+  if(btn) btn.style.display = '';
 }
 function nextQuiz(){
   if(!_quizAnswered){ toast('Choisissez une réponse'); return; }
   _quizAnswered = false;
-  DATA.quiz.current = DATA.quiz.current >= DATA.quiz.total ? DATA.quiz.total : DATA.quiz.current+1;
-  if(DATA.quiz.current >= DATA.quiz.total){
+  const q = DATA.quiz;
+  if(q.current >= q.total){
+    const score = q.score;
+    const pct = Math.round(score / q.total * 100);
+    const msg = pct >= 80 ? 'Excellent ! Vous maîtrisez l\u2019accueil client.' :
+                pct >= 60 ? 'Bien joué ! Quelques points à revoir.' :
+                'Continuez à vous former, chaque progrès compte !';
     openModal(`<div style="text-align:center">
       <div class="icon-tile it-violet" style="margin:0 auto 16px;width:64px;height:64px;border-radius:20px">${icon('trophy')}</div>
       <div class="h2">Quiz terminé !</div>
-      <p class="lead mt12">Vous avez gagné des points et progressé vers le badge Accueil Pro.</p>
-      <button class="btn btn-primary mt24" onclick="closeModal();DATA.quiz.current=3;setTab('emp-activities')">Retour aux activités</button>
+      <div style="font-size:32px;font-weight:800;color:var(--violet);margin:12px 0">${score}<span style="font-size:18px;color:var(--muted)"> / ${q.total}</span></div>
+      <p class="lead mt8">${msg}</p>
+      <p class="lead mt4" style="font-size:13px">Vous avez gagné <strong>${score * q.points} points</strong> et progressé vers le badge <strong>Accueil Pro</strong>.</p>
+      <button class="btn btn-primary mt24" onclick="closeModal();DATA.quiz.current=1;DATA.quiz.score=0;setTab('emp-activities')">Retour aux activités</button>
     </div>`);
     return;
   }
+  q.current++;
   render();
 }
-function openActivity(id){ STATE.tab='emp-activity-detail'; STATE.activeActivity=id; render(); }
+function openActivity(id){ STATE.tab='emp-activity-detail'; STATE.activeActivity=id; _videoCompleted=false; render(); }
 
 // ---- Planning state ----
 let _planWeekOffset = 0;  // 0 = current week, -1 = prev, +1 = next

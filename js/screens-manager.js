@@ -41,7 +41,7 @@ function mgrDashboard(){
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Bonjour ${u.name} 👋</div><div class="lead mt8">Vue globale de l\u2019hôtel</div></div>
       <div class="flex items-center gap12">
-        <button class="btn btn-ghost btn-sm" style="gap:8px" onclick="toggleReportFilter()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
+        <button class="btn btn-ghost btn-sm" style="gap:8px" onclick="openPeriodPicker()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
         <span class="mobile-only">${bell()}</span>
       </div>
     </div>
@@ -167,7 +167,7 @@ function mgrReports(){
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Rapports</div><div class="lead mt8">Analysez l\u2019impact de la formation sur la performance de vos équipes.</div></div>
       <div class="flex items-center gap12 desktop-only">
-        <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
+        <button class="btn btn-ghost btn-sm" onclick="openPeriodPicker()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">${icon('filter')} Filtres</button>
       </div>
     </div>
@@ -328,7 +328,7 @@ function mgrTrainers(){
         <button class="bell" onclick="setTab('mgr-dashboard')">${icon('arrowleft')}</button>
         <div><div class="h2">Rapports &amp; Formateurs</div><div class="lead mt8">Identifiez les besoins de vos équipes et trouvez l’offre adaptée.</div></div>
       </div>
-      <button class="btn btn-ghost btn-sm desktop-only" onclick="toggleReportFilter()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
+      <button class="btn btn-ghost btn-sm desktop-only" onclick="openPeriodPicker()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
     </div>
 
     <div class="grid g3 mt24 mb24">${stats}</div>
@@ -632,4 +632,30 @@ function mgrLateFormations(){
     </div>`).join('')}
     <button class="btn btn-primary btn-block mt16" onclick="setTab('mgr-send-reminder')">${icon('bell')} Envoyer un rappel groupé</button>
   `;
+}
+
+// ---- Sélecteur de période (modal) ----
+function openPeriodPicker(){
+  openModal(`
+    <div class="flex between items-center mb20">
+      <div class="h3">Sélectionner la période</div>
+      <button class="bell" style="width:36px;height:36px" onclick="closeModal()">${icon('plus','transform="rotate(45)"')}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${REPORT_PERIODS.map(p=>`
+        <div class="card flat tap${p===_reportPeriod?' active':''}" style="padding:14px 16px;text-align:left;${p===_reportPeriod?'background:var(--violet-soft);border-color:var(--violet)':''}" onclick="selectPeriod('${p}')">
+          <div style="font-weight:700;font-size:15px${p===_reportPeriod?';color:var(--violet)':''}">${p}</div>
+        </div>`).join('')}
+    </div>
+    <div class="flex gap12 mt20">
+      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+    </div>
+  `);
+}
+
+function selectPeriod(p){
+  _reportPeriod = p;
+  closeModal();
+  toast('Période : ' + p);
+  render();
 }

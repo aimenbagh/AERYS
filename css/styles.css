@@ -156,7 +156,7 @@ a { color: inherit; text-decoration: none; }
 .btn-ghost:hover { border-color: var(--violet); background: var(--violet-soft); }
 .btn-gold { background: var(--gold); color: #fff; box-shadow: 0 12px 26px rgba(200,147,47,.28); }
 .btn-gold:hover { filter: brightness(1.04); transform: translateY(-1px); }
-.btn-sm { padding: 10px 16px; font-size: 13.5px; border-radius: var(--r-sm); width: auto; }
+.btn-sm { padding: 10px 16px; font-size: 13.5px; border-radius: var(--r-sm); width: auto; white-space: nowrap; }
 .btn-block { width: 100%; }
 
 /* ====================== CARDS ====================== */
@@ -380,7 +380,7 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 .items-center { align-items: center; }
 .gap8 { gap: 8px; } .gap12 { gap: 12px; } .gap16 { gap: 16px; }
 .mt8 { margin-top: 8px; } .mt12 { margin-top: 12px; } .mt16 { margin-top: 16px; } .mt24 { margin-top: 24px; } .mt32 { margin-top: 32px; }
-.mb8 { margin-bottom: 8px; } .mb12 { margin-bottom: 12px; } .mb16 { margin-bottom: 16px; } .mb24 { margin-bottom: 24px; }
+.mb8 { margin-bottom: 8px; } .mb12 { margin-bottom: 12px; } .mb16 { margin-bottom: 16px; } .mb20 { margin-bottom: 20px; } .mb24 { margin-bottom: 24px; }
 .wrap { flex-wrap: wrap; }
 .scroll-x { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
 .scroll-x::-webkit-scrollbar { height: 0; }
@@ -408,8 +408,8 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 .shop-card .sh-body { padding: 14px 15px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .shop-card .sh-name { font-family: var(--font-display); font-weight: 700; font-size: 15.5px; }
 .shop-card .sh-desc { font-size: 13px; color: var(--grey-text); flex: 1; }
-.shop-card .sh-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-.shop-card .sh-pts { display: flex; align-items: center; gap: 7px; font-family: var(--font-display); font-weight: 800; font-size: 17px; color: var(--violet); }
+.shop-card .sh-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; gap: 8px; flex-wrap: wrap; }
+.shop-card .sh-pts { display: flex; align-items: center; gap: 7px; font-family: var(--font-display); font-weight: 800; font-size: 17px; color: var(--violet); white-space: nowrap; }
 .shop-card .sh-pts .coin { width: 22px; height: 22px; }
 
 /* banner gradient */
@@ -518,6 +518,13 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
   .g2.collapse { grid-template-columns: 1fr; }
   .act-card .ac-thumb { width: 104px; }
   .h1 { font-size: 30px; }
+  /* shop cards: tighter padding & smaller font on very small screens */
+  .shop-card .sh-body { padding: 10px 11px 12px; gap: 4px; }
+  .shop-card .sh-name { font-size: 13.5px; }
+  .shop-card .sh-desc { font-size: 12px; }
+  .shop-card .sh-pts { font-size: 14px; gap: 5px; }
+  .shop-card .sh-pts .coin { width: 18px; height: 18px; }
+  .btn-sm { padding: 8px 12px; font-size: 12.5px; }
 }
 
 /* desktop: show a clean status bar only in public frame */
