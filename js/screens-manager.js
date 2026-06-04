@@ -200,7 +200,7 @@ function mgrReports(){
     </div>` : ''}
     <div class="grid kpi-row mt24 mb24" id="kpiRow">${kpis}</div>
     <div class="grid g2 mt24" style="gap:18px">
-      <div class="card"><h3 class="section-title mb16">Évolution des formations terminées</h3>${lineChart(DATA.reportTrend)}</div>
+      <div class="card"><h3 class="section-title mb16">Évolution des formations terminées</h3><div class="chart-wrap">${lineChart(DATA.reportTrend)}</div></div>
       <div class="card"><div class="flex between items-center mb16"><h3 class="section-title">Performance par département</h3><a class="accent" style="font-weight:700;cursor:pointer" onclick="setTab('mgr-teams')">Voir tout</a></div>
         <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Département</th><th>Taux de complétion</th><th style="text-align:right">Score moyen</th></tr></thead><tbody>${deptPerf}</tbody></table></div></div>
     </div>

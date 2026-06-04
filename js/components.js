@@ -87,7 +87,7 @@ function lineChart(points, w=560, h=210, color='#5B21D6'){
   const grid = [0,.5,1].map(g=>`<line x1="${pad}" y1="${pad+ch*g}" x2="${pad+cw}" y2="${pad+ch*g}" stroke="#E6E6EF" stroke-width="1"/>`).join('');
   const dots = xy.map((c,i)=>`<circle cx="${c[0]}" cy="${c[1]}" r="4" fill="#fff" stroke="${color}" stroke-width="2.5"/><text x="${c[0]}" y="${c[1]-12}" text-anchor="middle" font-size="12" font-weight="700" fill="#0B0F3A">${points[i].v}</text>`).join('');
   const labels = points.map((p,i)=>`<text x="${pad+i*step}" y="${h-6}" text-anchor="middle" font-size="11" fill="#6B7185">${p.m}</text>`).join('');
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="xMidYMid meet">
     <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${color}" stop-opacity=".18"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
     ${grid}<path d="${area}" fill="url(#lg)"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}</svg>`;
 }
