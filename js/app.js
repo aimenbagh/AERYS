@@ -38,6 +38,10 @@ const SCREEN_MAP = {
   'mgr-trainers': mgrTrainers,
   'mgr-request': mgrRequest,
   'mgr-profile': mgrProfile,
+  'mgr-dept-detail': mgrDeptDetail,
+  'mgr-emp-detail': mgrEmpDetail,
+  'mgr-send-reminder': mgrSendReminder,
+  'mgr-late': mgrLateFormations,
   // Formateur
   'form-home': formHome,
   'form-create': formCreate,
@@ -45,6 +49,9 @@ const SCREEN_MAP = {
   'form-sessions': formSessions,
   'form-tracking': formTracking,
   'form-profile': formProfile,
+  'form-edit': formEdit,
+  'form-stats': formStats,
+  'form-send-reminder': formSendReminder,
 };
 
 // Sub-screens not present in the bottom tab bar -> highlight their parent tab
@@ -53,7 +60,14 @@ const TAB_ALIAS = {
   'mgr-assign': 'mgr-teams',
   'mgr-trainers': 'mgr-dashboard',
   'mgr-request': 'mgr-dashboard',
+  'mgr-dept-detail': 'mgr-teams',
+  'mgr-emp-detail': 'mgr-teams',
+  'mgr-send-reminder': 'mgr-teams',
+  'mgr-late': 'mgr-teams',
   'form-sessions': 'form-tracking',
+  'form-edit': 'form-library',
+  'form-stats': 'form-library',
+  'form-send-reminder': 'form-home',
 };
 
 // ---- Navigation API (used by every screen) ----
@@ -88,6 +102,12 @@ function closeSub() {
   window.scrollTo(0, 0);
 }
 
+
+// ---- Navigate to profile for current role ----
+function setProfileTab() {
+  const profileTab = { employe: 'emp-profile', manager: 'mgr-profile', formateur: 'form-profile' }[STATE.role];
+  if (profileTab) setTab(profileTab);
+}
 function logout() {
   STATE.screen = 'landing';
   STATE.role = null;

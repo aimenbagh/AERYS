@@ -45,18 +45,18 @@ function screenLanding(){
 // ---- Écran 1.1 : Découvrir l'application ----
 function screenDiscover(){
   const spaces = [
-    { tone:'it-violet-soft', icolor:'var(--violet)', word:'Employé', wc:'var(--violet)',
+    { role:'employe', tone:'it-violet-soft', icolor:'var(--violet)', word:'Employé', wc:'var(--violet)',
       icon:'user', desc:'Apprendre de façon interactive grâce aux quiz, jeux, simulations, planning et récompenses.',
       chips:[['gamepad','Quiz & jeux'],['planning','Planning'],['star','Récompenses'],['user','Profil']], gold:false },
-    { tone:'it-gold-soft', icolor:'var(--gold)', word:'Manager', wc:'var(--gold)',
+    { role:'manager', tone:'it-gold-soft', icolor:'var(--gold)', word:'Manager', wc:'var(--gold)',
       icon:'briefcase', desc:'Piloter la progression des équipes, suivre les indicateurs et analyser la performance.',
       chips:[['dashboard','Dashboard'],['users','Équipes'],['report','Rapports'],['user','Profil']], gold:true },
-    { tone:'it-violet-soft', icolor:'var(--violet)', word:'Formateur', wc:'var(--violet)',
+    { role:'formateur', tone:'it-violet-soft', icolor:'var(--violet)', word:'Formateur', wc:'var(--violet)',
       icon:'cap', desc:'Créer des contenus, animer des sessions et suivre les apprenants.',
       chips:[['edit','Création'],['library','Bibliothèque'],['play','Sessions'],['trend','Suivi']], gold:false },
   ];
   const blocks = spaces.map(s=>`
-    <div class="card mb16">
+    <div class="card mb16 tap" onclick="go('login','${s.role}')" style="cursor:pointer">
       <div class="flex gap16" style="align-items:flex-start">
         <div class="icon-tile ${s.tone}">${icon(s.icon)}</div>
         <div style="flex:1">
@@ -65,7 +65,7 @@ function screenDiscover(){
         </div>
       </div>
       <div class="flex wrap gap8 mt16">
-        ${s.chips.map(c=>`<span class="chip${s.gold?' gold':''}">${icon(c[0])}${c[1]}</span>`).join('')}
+        ${s.chips.map(c=>`<span class="chip${s.gold?' gold':''}" onclick="go('login','${s.role||'employe'}')" style="cursor:pointer">${icon(c[0])}${c[1]}</span>`).join('')}
       </div>
     </div>`).join('');
 
@@ -142,7 +142,7 @@ function screenLogin(preRole){
       <label style="font-weight:700;font-size:14.5px;display:block;margin-bottom:10px">Sélectionnez votre profil</label>
       ${roleEls}
       <button class="btn btn-primary mt16" onclick="doLogin()">${icon('lock')} Se connecter</button>
-      <p class="lead" style="text-align:center;margin-top:16px;font-size:13.5px">Vous n\u2019avez pas de compte ? <a class="accent" style="font-weight:700;cursor:pointer" onclick="toast('Contactez l\\'administrateur RH')">Contacter l\u2019administrateur.</a></p>
+      <p class="lead" style="text-align:center;margin-top:16px;font-size:13.5px">Vous n\u2019avez pas de compte ? <a class="accent" style="font-weight:700;cursor:pointer" onclick="contactAdmin()">Contacter l\u2019administrateur.</a></p>
       <div class="card flat mt16 flex items-center gap12" style="background:var(--violet-soft);border-color:var(--violet-light)">
         <div class="icon-tile it-violet" style="width:42px;height:42px;border-radius:12px">${icon('shield')}</div>
         <div><div style="font-weight:700">Plateforme sécurisée</div><div class="lead" style="font-size:13px">Vos données sont protégées et confidentielles.</div></div>
@@ -174,4 +174,23 @@ function doLogin(){
 }
 function defaultTab(role){
   return role==='manager' ? 'mgr-dashboard' : role==='formateur' ? 'form-home' : 'emp-home';
+}
+
+function contactAdmin(){
+  openModal(`
+    <div class="flex between items-center mb16">
+      <div class="h3">Contacter l'administrateur</div>
+      <button class="bell" style="width:36px;height:36px" onclick="closeModal()">${icon('plus','transform="rotate(45)"')}</button>
+    </div>
+    <p class="lead" style="font-size:14px">Pour créer un compte, contactez le service RH ou votre responsable.</p>
+    <div class="card flat mt16 flex items-center gap12" style="background:var(--violet-soft);border-color:var(--violet-light)">
+      <div class="icon-tile it-violet" style="width:42px;height:42px">${icon('mail')}</div>
+      <div>
+        <div style="font-weight:700">RH Hyatt Regency Alger</div>
+        <div class="lead" style="font-size:13px">rh@hyattalger.com</div>
+      </div>
+    </div>
+    <button class="btn btn-primary mt16" onclick="closeModal();toast('Message envoyé au service RH ✓')">${icon('send')} Envoyer une demande</button>
+    <button class="btn btn-ghost mt8" onclick="closeModal()">Fermer</button>
+  `);
 }

@@ -29,7 +29,7 @@ function formHome(){
     <div class="card flat flex items-center gap12 mb12" style="background:#fff">
       <div class="icon-tile it-violet-soft" style="width:44px;height:44px">${icon(a.icon)}</div>
       <div style="flex:1"><div style="font-weight:700">${a.title}</div><div class="lead" style="font-size:13px;margin-top:3px">${a.desc}</div></div>
-      <button class="btn btn-ghost btn-sm" onclick="toast('${a.action}')">${a.action} ${icon('chevright')}</button>
+      <button class="btn btn-ghost btn-sm" onclick="${a.goArg?`statsFormation('${a.goArg}')`:a.go?`setTab('${a.go}')`:`toast('${a.action}')`}">${a.action} ${icon('chevright')}</button>
     </div>`).join('');
 
   const recent = DATA.formRecent.map(r=>`
@@ -41,7 +41,7 @@ function formHome(){
       <div style="flex:1"><div style="font-weight:700">${r.title}</div>
         <div class="lead" style="font-size:13px;margin-top:3px">${r.date} · ${icon('users','width="14" height="14" style=\"display:inline;vertical-align:-2px\"')} ${r.learners} apprenants</div></div>
       <span class="badge-pill badge-green">${r.rate}</span>
-      <button class="bell" style="width:34px;height:34px;box-shadow:none;border:none" onclick="toast('Options')">${icon('dots')}</button>
+      <button class="bell" style="width:34px;height:34px;box-shadow:none;border:none" onclick="statsFormation('${r.title}')">${icon('dots')}</button>
     </div>`).join('');
 
   return `
@@ -52,7 +52,7 @@ function formHome(){
     <div class="grid g2 mt24 mb24">${kpis}</div>
     <div class="card mb24" style="background:var(--violet-soft);border-color:var(--violet-light)">
       <div class="flex between items-center mb16"><div class="flex items-center gap8"><span class="accent">${icon('sparkles')}</span><h3 class="section-title">Assistant IA</h3></div>
-        <a class="accent" style="font-weight:700;cursor:pointer" onclick="toast('Recommandations IA')">Recommandations pour vous</a></div>
+        <a class="accent" style="font-weight:700;cursor:pointer" onclick="setTab('form-library')">Recommandations pour vous</a></div>
       ${ai}
     </div>
     <div class="flex between items-center mb16"><h3 class="section-title">Activités récentes</h3><a class="accent" style="font-weight:700;cursor:pointer" onclick="setTab('form-library')">Voir tout</a></div>
@@ -144,11 +144,11 @@ function formLibrary(){
           <span class="lead" style="font-size:12.5px">${l.dept} · ${l.level} · ${l.stat}</span></div></div>
       <span class="badge-pill ${l.status==='Publié'?'badge-green':'badge-grey'}">${l.status}</span>
       <div class="flex gap8 desktop-only">
-        <button class="bell" style="width:36px;height:36px" title="Modifier" onclick="toast('Modifier ${l.title.replace(/'/g,"")}')">${icon('edit')}</button>
-        <button class="bell" style="width:36px;height:36px" title="Dupliquer" onclick="toast('Dupliqué')">${icon('duplicate')}</button>
-        <button class="bell" style="width:36px;height:36px" title="Statistiques" onclick="toast('Statistiques')">${icon('chartline')}</button>
+        <button class="bell" style="width:36px;height:36px" title="Modifier" onclick="editFormation('${l.title}')">${icon('edit')}</button>
+        <button class="bell" style="width:36px;height:36px" title="Dupliquer" onclick="duplicateFormation('${l.title}')">${icon('duplicate')}</button>
+        <button class="bell" style="width:36px;height:36px" title="Statistiques" onclick="statsFormation('${l.title}')">${icon('chartline')}</button>
       </div>
-      <button class="bell mobile-only" style="width:36px;height:36px" onclick="toast('Options du contenu')">${icon('dots')}</button>
+      <button class="bell mobile-only" style="width:36px;height:36px" onclick="editFormation('${l.title}')">${icon('dots')}</button>
     </div>`).join('');
   return `
     <div class="flex between" style="align-items:flex-start">
@@ -258,5 +258,149 @@ function formProfile(){
       ${rows.map(r=>`<div class="list-row" onclick="openSub('${r.sub}')"><div class="lr-icon">${icon(r.icon)}</div><div class="lr-label">${r.label}</div><span class="chev">${icon('chevright')}</span></div>`).join('')}
     </div>
     <button class="btn btn-ghost mt24" style="background:var(--violet-soft)" onclick="logout()">${icon('logout')} Se déconnecter</button>
+  `;
+}
+
+// ---- État global bibliothèque ----
+let _editFormationTitle = null;
+let _statsFormationTitle = null;
+
+function editFormation(title) {
+  _editFormationTitle = title;
+  setTab('form-edit');
+}
+function duplicateFormation(title) {
+  toast('Contenu dupliqué : ' + title);
+  render();
+}
+function statsFormation(title) {
+  _statsFormationTitle = title;
+  setTab('form-stats');
+}
+
+// ---- Modifier une formation ----
+function formEdit(){
+  const title = _editFormationTitle || 'Accueil client parfait';
+  const item = DATA.library.find(l=>l.title===title) || DATA.library[0];
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('form-library')">${icon('arrowleft')}</button>
+      <div><div class="h2">Modifier le contenu</div><div class="lead mt4">${item.format} · <span class="badge-pill ${item.status==='Publié'?'badge-green':'badge-grey'}">${item.status}</span></div></div>
+    </div>
+    <div class="card">
+      <h3 class="section-title mb16">Informations générales</h3>
+      <div class="grid g2" style="gap:16px">
+        <div class="field" style="margin:0"><label>Titre</label><div class="input-wrap"><input class="inp" style="padding-left:16px" value="${item.title}"></div></div>
+        <div class="field" style="margin:0"><label>Objectif pédagogique</label><div class="input-wrap"><input class="inp" style="padding-left:16px" placeholder="Ce que l'apprenant doit maîtriser"></div></div>
+        <div class="field" style="margin:0"><label>Département</label><select class="inp">
+          ${DATA.departments.map(d=>`<option${d.name===item.dept?' selected':''}>${d.name}</option>`).join('')}
+          <option${item.dept==='Tous'?' selected':''}>Tous</option>
+        </select></div>
+        <div class="field" style="margin:0"><label>Niveau</label><select class="inp">
+          ${['Débutant','Intermédiaire','Avancé'].map(n=>`<option${n===item.level?' selected':''}>${n}</option>`).join('')}
+        </select></div>
+        <div class="field" style="margin:0"><label>Durée estimée</label><div class="input-wrap">${icon('clock','class="lead-icon"')}<input class="inp" placeholder="10 min"></div></div>
+        <div class="field" style="margin:0"><label>Points à gagner</label><input class="inp" style="padding-left:16px" placeholder="10 à 30"></div>
+      </div>
+      <div class="flex gap12 mt24" style="flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="setTab('form-library')">Annuler</button>
+        ${item.status==='Publié'
+          ? `<button class="btn btn-ghost" style="color:var(--orange);border-color:#f0d9b0" onclick="setTab('form-library');toast('Dépublié')">Dépublier</button>`
+          : `<button class="btn btn-ghost" style="color:var(--green);border-color:#b8e6c8" onclick="setTab('form-library');toast('Publié !')">Publier</button>`}
+        <button class="btn btn-primary" onclick="setTab('form-library');toast('Modifications enregistrées ✓')">${icon('check')} Enregistrer</button>
+      </div>
+    </div>
+  `;
+}
+
+// ---- Statistiques d'une formation ----
+function formStats(){
+  const title = _statsFormationTitle || 'Accueil client parfait';
+  // Try library first, then match from formRecent by partial title
+  const item = DATA.library.find(l=>l.title===title)
+    || DATA.library.find(l=>title.includes(l.title) || l.title.includes(title))
+    || (() => {
+        const r = DATA.formRecent.find(x=>x.title===title);
+        return r ? { title:r.title, format:r.type, icon:r.icon, dept:'Tous', level:'—', status:'Publié', stat:`${r.learners} apprenants • ${r.rate.split('%')[0]}%` } : null;
+      })()
+    || DATA.library[0];
+  const isPublished = item.status === 'Publié';
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('form-library')">${icon('arrowleft')}</button>
+      <div><div class="h2">Statistiques</div><div class="lead mt4">${item.title}</div></div>
+    </div>
+    ${!isPublished ? `
+    <div class="card flat mb16" style="background:#fff8f0;border-color:#f0d9b0">
+      <div class="flex items-center gap12">
+        <div class="icon-tile it-orange">${icon('clock')}</div>
+        <div><div style="font-weight:700">Contenu en brouillon</div><div class="lead" style="font-size:13px">Publiez ce contenu pour voir les statistiques d'utilisation.</div></div>
+        <button class="btn btn-ghost btn-sm" style="flex:none;color:var(--green)" onclick="setTab('form-library');toast('Publié !')">Publier</button>
+      </div>
+    </div>` : ''}
+    <div class="grid g3 mb24">
+      <div class="stat-card"><div class="sc-icon it-violet-soft">${icon('users')}</div><div class="sc-value mt12" style="font-size:26px">${isPublished?item.stat.split(' ')[0]:'—'}</div><div class="sc-label">Apprenants</div></div>
+      <div class="stat-card"><div class="sc-icon it-green">${icon('checkcircle')}</div><div class="sc-value mt12" style="font-size:26px">${isPublished?item.stat.split('• ')[1]||'—':'—'}</div><div class="sc-label">Taux de réussite</div></div>
+      <div class="stat-card"><div class="sc-icon it-blue">${icon('clock')}</div><div class="sc-value mt12" style="font-size:26px">${isPublished?'8 min':'—'}</div><div class="sc-label">Durée moyenne</div></div>
+    </div>
+    ${isPublished ? `
+    <div class="card mb16">
+      <h3 class="section-title mb16">Progression par département</h3>
+      ${DATA.departments.map(d=>`
+      <div class="flex items-center gap16 mb12">
+        <div style="width:120px;font-size:14px;font-weight:600">${d.name}</div>
+        <div style="flex:1">${progressBar(d.prog, d.color)}</div>
+        <b style="font-size:13px;width:42px;text-align:right">${d.prog}%</b>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <h3 class="section-title mb16">Apprenants récents</h3>
+      ${DATA.employees.map(e=>`
+      <div class="flex items-center gap12 mb12">
+        ${avatarEl({name:e.name},36)}
+        <div style="flex:1"><div style="font-weight:600;font-size:14px">${e.name}</div><div class="lead" style="font-size:12px">${e.poste}</div></div>
+        <b class="${e.score>=80?'txt-green':e.score>=70?'txt-orange':'txt-red'}">${e.score}%</b>
+        <span class="badge-pill ${e.tone}" style="font-size:11px">${e.status}</span>
+      </div>`).join('')}
+    </div>` : ''}
+  `;
+}
+
+// ---- Envoyer un rappel (formateur) ----
+function formSendReminder(){
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('form-home')">${icon('arrowleft')}</button>
+      <div><div class="h2">Relancer les apprenants</div><div class="lead mt4">Notifiez les apprenants qui n'ont pas terminé le module.</div></div>
+    </div>
+    <div class="card flat mb16" style="background:#fff8f0;border-color:#f0d9b0">
+      <div class="flex items-center gap12">
+        <div class="icon-tile it-orange">${icon('target')}</div>
+        <div><div style="font-weight:700">Service d'exception — 42% de complétion</div>
+        <div class="lead" style="font-size:13px">58% des apprenants n'ont pas encore terminé ce module.</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="field"><label>Destinataires</label>
+        <select class="inp">
+          <option>Apprenants n'ayant pas terminé (58%)</option>
+          <option>Apprenants n'ayant pas commencé</option>
+          <option>Tous les apprenants</option>
+        </select>
+      </div>
+      <div class="field"><label>Canal</label>
+        <div class="flex gap12 flex-wrap">
+          <span class="chip active">Notification app</span>
+          <span class="chip" onclick="this.classList.toggle('active')">Email</span>
+        </div>
+      </div>
+      <div class="field"><label>Message</label>
+        <textarea class="inp" style="padding-left:16px;min-height:90px;resize:vertical">Rappel : le module "Service d'exception" est disponible sur la plateforme. Prenez 10 minutes pour le compléter !</textarea>
+      </div>
+      <div class="flex gap12 mt8">
+        <button class="btn btn-ghost" onclick="setTab('form-home')">Annuler</button>
+        <button class="btn btn-primary" onclick="setTab('form-home');toast('Rappel envoyé aux apprenants ✓')">${icon('send')} Envoyer le rappel</button>
+      </div>
+    </div>
   `;
 }

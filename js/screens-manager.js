@@ -28,7 +28,7 @@ function mgrDashboard(){
     <div class="card flat flex items-center gap16 mb12">
       <div class="icon-tile ${a.tone}">${icon(a.icon)}</div>
       <div style="flex:1;font-weight:600">${a.text}</div>
-      <button class="btn btn-ghost btn-sm" onclick="toast('${a.action}')">${a.action} ${icon('chevright')}</button>
+      <button class="btn btn-ghost btn-sm" onclick="${a.go?`setTab('${a.go}')`:`toast('${a.action}')`}">${a.action} ${icon('chevright')}</button>
     </div>`).join('');
 
   const quick = DATA.mgrQuick.map(q=>`
@@ -41,7 +41,7 @@ function mgrDashboard(){
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Bonjour ${u.name} 👋</div><div class="lead mt8">Vue globale de l\u2019hôtel</div></div>
       <div class="flex items-center gap12">
-        <button class="btn btn-ghost btn-sm" style="gap:8px" onclick="toast('Sélecteur de période')">${icon('calendar')} Mai 2026 ${icon('chevdown')}</button>
+        <button class="btn btn-ghost btn-sm" style="gap:8px" onclick="toggleReportFilter()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
         <span class="mobile-only">${bell()}</span>
       </div>
     </div>
@@ -69,7 +69,7 @@ function mgrTeams(){
         <div><div class="lead" style="font-size:12px">En retard</div><div class="txt-red" style="font-weight:800;font-size:18px">${d.late}</div></div>
         <div style="text-align:right"><div class="lead" style="font-size:12px">Score moyen</div><div class="txt-green" style="font-weight:800;font-size:18px">${d.score}%</div></div>
       </div>
-      <button class="btn btn-ghost btn-sm mt16" style="width:100%;color:${d.color};border-color:${d.color}33" onclick="toast('Détail ${d.name}')">Voir détail</button>
+      <button class="btn btn-ghost btn-sm mt16" style="width:100%;color:${d.color};border-color:${d.color}33" onclick="setDeptDetail('${d.name}')">Voir détail</button>
     </div>`).join('');
 
   const rows = DATA.employees.map(e=>`
@@ -80,7 +80,7 @@ function mgrTeams(){
       <td><b class="${e.score>=80?'txt-green':e.score>=70?'txt-orange':'txt-red'}">${e.score}%</b></td>
       <td><div class="flex items-center gap8"><span class="accent">${icon('medal')}</span> +${e.badges}</div></td>
       <td><span class="badge-pill ${e.tone}">${e.status}</span></td>
-      <td><button class="bell" style="width:34px;height:34px;box-shadow:none;border:none" onclick="toast('Options employé')">${icon('dots')}</button></td>
+      <td><button class="bell" style="width:34px;height:34px;box-shadow:none;border:none" onclick="setEmpDetail('${e.name}')">${icon('dots')}</button></td>
     </tr>`).join('');
 
   return `
@@ -90,7 +90,7 @@ function mgrTeams(){
     </div>
     <div class="flex gap12 mt24 mb24">
       <div class="input-wrap" style="flex:1">${icon('search','class="lead-icon"')}<input class="inp" placeholder="Rechercher un département ou un employé..."></div>
-      <button class="btn btn-ghost" style="width:auto" onclick="toast('Filtres')">${icon('filter')} Filtres</button>
+      <button class="btn btn-ghost" style="width:auto" onclick="toggleReportFilter()">${icon('filter')} Filtres</button>
     </div>
     <div class="flex between items-center mb16"><h3 class="section-title">Vue par département</h3>
       <button class="btn btn-ghost btn-sm" onclick="toast('Trier par…')">Trier par : Progression ${icon('chevdown')}</button></div>
@@ -106,8 +106,10 @@ function mgrTeams(){
     <div class="grid g2 mt24" style="gap:18px">
       <div class="card">
         <h3 class="section-title mb16">Actions rapides — Réception</h3>
-        ${[['users','Assigner une formation à l\u2019équipe'],['bell','Envoyer un rappel à l\u2019équipe'],['calendar','Planifier une session'],['clock','Voir les formations en retard']].map(a=>`
-          <div class="list-row" onclick="toast('${a[1]}')"><div class="lr-icon">${icon(a[0])}</div><div class="lr-label" style="font-size:14.5px">${a[1]}</div><span class="chev">${icon('chevright')}</span></div>`).join('')}
+        <div class="list-row" onclick="setTab('mgr-assign')"><div class="lr-icon">${icon('users')}</div><div class="lr-label" style="font-size:14.5px">Assigner une formation \u00e0 l\u2019\u00e9quipe</div><span class="chev">${icon('chevright')}</span></div>
+          <div class="list-row" onclick="setTab('mgr-send-reminder')"><div class="lr-icon">${icon('bell')}</div><div class="lr-label" style="font-size:14.5px">Envoyer un rappel \u00e0 l\u2019\u00e9quipe</div><span class="chev">${icon('chevright')}</span></div>
+          <div class="list-row" onclick="setTab('mgr-planning')"><div class="lr-icon">${icon('calendar')}</div><div class="lr-label" style="font-size:14.5px">Planifier une session</div><span class="chev">${icon('chevright')}</span></div>
+          <div class="list-row" onclick="setTab('mgr-late')"><div class="lr-icon">${icon('clock')}</div><div class="lr-label" style="font-size:14.5px">Voir les formations en retard</div><span class="chev">${icon('chevright')}</span></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column">
         <h3 class="section-title mb16">Besoin d\u2019aide ?</h3>
@@ -123,6 +125,22 @@ function mgrTeams(){
 }
 
 // ---- Rapports ----
+// ---- Rapports : état des filtres ----
+let _reportPeriod = 'Mai 2026';
+let _reportDept = 'Tous les départements';
+let _reportType = 'Tous';
+let _reportFormateur = 'Tous';
+let _reportFilterOpen = false;
+
+const REPORT_PERIODS = ['Janvier 2026','Février 2026','Mars 2026','Avril 2026','Mai 2026','Juin 2026'];
+
+function setReportPeriod(v){ _reportPeriod = v; _reportFilterOpen = false; render(); }
+function setReportDept(v){ _reportDept = v; render(); }
+function setReportType(v){ _reportType = v; render(); }
+function setReportFormateur(v){ _reportFormateur = v; render(); }
+function toggleReportFilter(){ _reportFilterOpen = !_reportFilterOpen; render(); }
+function applyReportFilters(){ _reportFilterOpen = false; toast('Filtres appliqués ✓'); render(); }
+
 function mgrReports(){
   const kpis = DATA.reportKpis.map(k=>`
     <div class="stat-card">
@@ -149,18 +167,37 @@ function mgrReports(){
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Rapports</div><div class="lead mt8">Analysez l\u2019impact de la formation sur la performance de vos équipes.</div></div>
       <div class="flex items-center gap12 desktop-only">
-        <button class="btn btn-ghost btn-sm" onclick="toast('Sélecteur de période')">${icon('calendar')} Mai 2026 ${icon('chevdown')}</button>
-        <button class="btn btn-ghost btn-sm" onclick="toast('Filtres')">${icon('filter')} Filtres</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">${icon('filter')} Filtres</button>
       </div>
     </div>
-    <div class="card mt24 mb24 desktop-only">
-      <div class="grid" style="grid-template-columns:repeat(4,1fr) auto;gap:14px;align-items:end">
-        ${[['Période','Mai 2026'],['Département','Tous les départements'],['Type de formation','Tous'],['Formateur','Tous']].map(f=>`
-          <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px">${f[0]}</label>
-          <select class="inp"><option>${f[1]}</option></select></div>`).join('')}
-        <button class="btn btn-primary" style="width:auto" onclick="toast('Filtres appliqués')">Appliquer</button>
+    ${_reportFilterOpen ? `
+    <div class="card mt24 mb24" style="animation:fadeIn .15s ease">
+      <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:16px" id="filterPanel">
+        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px">Période</label>
+          <select class="inp" onchange="setReportPeriod(this.value)">
+            ${REPORT_PERIODS.map(p=>`<option${p===_reportPeriod?' selected':''}>${p}</option>`).join('')}
+          </select></div>
+        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px">Département</label>
+          <select class="inp" onchange="setReportDept(this.value)">
+            <option${_reportDept==='Tous les départements'?' selected':''}>Tous les départements</option>
+            ${DATA.departments.map(d=>`<option${d.name===_reportDept?' selected':''}>${d.name}</option>`).join('')}
+          </select></div>
+        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px">Type de formation</label>
+          <select class="inp" onchange="setReportType(this.value)">
+            ${['Tous','Quiz','Jeu','Simulation','Micro-learning','Vidéo'].map(t=>`<option${t===_reportType?' selected':''}>${t}</option>`).join('')}
+          </select></div>
+        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px">Formateur</label>
+          <select class="inp" onchange="setReportFormateur(this.value)">
+            <option${_reportFormateur==='Tous'?' selected':''}>Tous</option>
+            <option>Rania Meziane</option><option>Karim Benali</option>
+          </select></div>
       </div>
-    </div>
+      <div class="flex gap12 mt16">
+        <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">Fermer</button>
+        <button class="btn btn-primary" style="width:auto" onclick="applyReportFilters()">Appliquer</button>
+      </div>
+    </div>` : ''}
     <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:14px" id="kpiRow">${kpis}</div>
     <div class="grid g2 mt24" style="gap:18px">
       <div class="card"><h3 class="section-title mb16">Évolution des formations terminées</h3>${lineChart(DATA.reportTrend)}</div>
@@ -190,6 +227,9 @@ function mgrReports(){
 
 // ---- Planning manager ----
 function mgrPlanning(){
+  const w = getWeekData();
+  const days = w.days.map(d=>`<div class="week-day${d.active?' active':''}" onclick="planSetDay(${d.d})" style="cursor:pointer">
+    <div class="wd-name">${d.n}</div><div class="wd-num">${d.d}</div>${d.dot?'<div class="wd-dot"></div>':''}</div>`).join('');
   const sessions = DATA.sessions.map(s=>`
     <div class="card flat flex items-center gap16 mb12">
       <div class="icon-tile it-violet-soft">${icon('classvirtual')}</div>
@@ -200,6 +240,14 @@ function mgrPlanning(){
   return `
     <div class="h2">Planning des formations</div>
     <div class="lead mt8 mb24">Sessions et échéances de formation programmées pour vos équipes.</div>
+    <div class="card mt24 mb24">
+      <div class="flex between items-center mb16">
+        <button class="bell" style="width:38px;height:38px" onclick="planPrevWeek()">${icon('chevleft')}</button>
+        <div class="h3">${w.label}</div>
+        <button class="bell" style="width:38px;height:38px" onclick="planNextWeek()">${icon('chevright')}</button>
+      </div>
+      <div class="week-strip"><span></span>${days}<span></span></div>
+    </div>
     <div class="grid g3 mb24">
       ${[['calendar','Sessions ce mois','18','it-violet-soft'],['users','Participants attendus','80','it-green'],['clock','Échéances cette semaine','5','it-orange']].map(s=>`
         <div class="stat-card"><div class="sc-icon ${s[3]}">${icon(s[0])}</div><div class="sc-value mt12" style="font-size:26px">${s[2]}</div><div class="sc-label">${s[1]}</div></div>`).join('')}
@@ -208,7 +256,7 @@ function mgrPlanning(){
     ${sessions}
     <div class="card flat mt16 flex items-center between" style="background:var(--gold-light);border-color:#f0dcae">
       <div class="flex items-center gap12"><span class="accent-gold">${icon('bell')}</span><div class="lead" style="color:var(--navy)">3 formations obligatoires arrivent à échéance le 26 mai.</div></div>
-      <button class="btn btn-gold btn-sm" onclick="toast('Rappel envoyé aux équipes')">Relancer</button>
+      <button class="btn btn-gold btn-sm" onclick="setTab('mgr-send-reminder')">Relancer</button>
     </div>
   `;
 }
@@ -280,7 +328,7 @@ function mgrTrainers(){
         <button class="bell" onclick="setTab('mgr-dashboard')">${icon('arrowleft')}</button>
         <div><div class="h2">Rapports &amp; Formateurs</div><div class="lead mt8">Identifiez les besoins de vos équipes et trouvez l’offre adaptée.</div></div>
       </div>
-      <button class="btn btn-ghost btn-sm desktop-only" onclick="toast('Sélecteur de période')">${icon('calendar')} Mai 2026 ${icon('chevdown')}</button>
+      <button class="btn btn-ghost btn-sm desktop-only" onclick="toggleReportFilter()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
     </div>
 
     <div class="grid g3 mt24 mb24">${stats}</div>
@@ -399,5 +447,189 @@ function mgrProfile(){
       ${rows.map(r=>`<div class="list-row" onclick="openSub('${r.sub}')"><div class="lr-icon">${icon(r.icon)}</div><div class="lr-label">${r.label}</div><span class="chev">${icon('chevright')}</span></div>`).join('')}
     </div>
     <button class="btn btn-ghost mt24" style="background:var(--violet-soft)" onclick="logout()">${icon('logout')} Se déconnecter</button>
+  `;
+}
+
+// ---- État global pour detail screens ----
+let _selectedDept = 'Réception';
+let _selectedEmp = null;
+
+function setDeptDetail(name) {
+  _selectedDept = name;
+  setTab('mgr-dept-detail');
+}
+function setEmpDetail(name) {
+  _selectedEmp = name;
+  setTab('mgr-emp-detail');
+}
+
+// ---- Détail département ----
+function mgrDeptDetail(){
+  const d = DATA.departments.find(x=>x.name===_selectedDept) || DATA.departments[0];
+  const emps = DATA.employees.filter(e=>e.poste && true); // show all for demo
+  const rows = emps.map(e=>`
+    <tr>
+      <td><div class="u-cell">${avatarEl({name:e.name},36)}<span class="u-name">${e.name}</span></div></td>
+      <td class="muted">${e.poste}</td>
+      <td><div class="flex items-center gap12" style="min-width:140px">${progressBar(e.prog)}<b>${e.prog}%</b></div></td>
+      <td><b class="${e.score>=80?'txt-green':e.score>=70?'txt-orange':'txt-red'}">${e.score}%</b></td>
+      <td><span class="badge-pill ${e.tone}">${e.status}</span></td>
+      <td><button class="bell" style="width:34px;height:34px;box-shadow:none;border:none" onclick="setEmpDetail('${e.name}')">${icon('dots')}</button></td>
+    </tr>`).join('');
+
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('mgr-teams')">${icon('arrowleft')}</button>
+      <div class="icon-tile" style="background:${d.color}1a;color:${d.color};width:48px;height:48px;flex:none">${icon(d.icon)}</div>
+      <div><div class="h2">${d.name}</div><div class="lead mt4">${d.count} employés · Score moyen : <b class="txt-green">${d.score}%</b></div></div>
+    </div>
+    <div class="grid g3 mb24">
+      <div class="stat-card">${progRing(d.prog, d.color, 64)}<div class="sc-label mt12">Progression</div></div>
+      <div class="stat-card"><div class="sc-icon it-red">${icon('alertuser')}</div><div class="sc-value mt12" style="font-size:26px;color:var(--red)">${d.late}</div><div class="sc-label">En retard</div></div>
+      <div class="stat-card"><div class="sc-icon it-green">${icon('checkcircle')}</div><div class="sc-value mt12" style="font-size:26px;color:var(--green)">${d.score}%</div><div class="sc-label">Score moyen</div></div>
+    </div>
+    <div class="flex between items-center mb16">
+      <h3 class="section-title">Employés — ${d.name}</h3>
+      <button class="btn btn-ghost btn-sm" onclick="toast('Export en cours…')">${icon('download')} Exporter</button>
+    </div>
+    <div class="card" style="padding:6px 8px;overflow-x:auto">
+      <table class="tbl"><thead><tr><th>Employé</th><th>Poste</th><th>Progression</th><th>Score</th><th>Statut</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>
+    <div class="flex gap12 mt24" style="flex-wrap:wrap">
+      <button class="btn btn-primary" style="flex:1;min-width:200px" onclick="setTab('mgr-assign')">${icon('cap')} Assigner une formation</button>
+      <button class="btn btn-ghost" style="flex:1;min-width:200px" onclick="setTab('mgr-send-reminder')">${icon('bell')} Envoyer un rappel</button>
+    </div>
+  `;
+}
+
+// ---- Détail employé ----
+function mgrEmpDetail(){
+  const e = DATA.employees.find(x=>x.name===_selectedEmp) || DATA.employees[0];
+  const formations = [
+    { title:'Accueil client parfait', format:'Quiz', prog:100, score:92, status:'Terminé', tone:'badge-green' },
+    { title:'Mission Hyatt', format:'Jeu', prog:75, score:80, status:'En cours', tone:'badge-orange' },
+    { title:'Gestion des réclamations', format:'Simulation', prog:0, score:0, status:'Non commencé', tone:'badge-grey' },
+  ];
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('mgr-teams')">${icon('arrowleft')}</button>
+      <div class="h2">Profil employé</div>
+    </div>
+    <div class="card mb24 flex items-center gap16" style="flex-wrap:wrap">
+      ${avatarEl({name:e.name}, 72, true)}
+      <div style="flex:1;min-width:180px">
+        <div class="h2" style="font-size:22px">${e.name}</div>
+        <div class="lead mt4">${e.poste}</div>
+        <div class="flex gap8 mt12 flex-wrap">
+          <span class="badge-pill ${e.tone}">${e.status}</span>
+          <span class="flex items-center gap6 lead" style="font-size:13px">${icon('medal')} +${e.badges} badges</span>
+        </div>
+      </div>
+      <div class="flex gap16 flex-wrap" style="text-align:center">
+        <div><div style="font-weight:800;font-size:26px">${e.prog}%</div><div class="lead" style="font-size:12px">Progression</div></div>
+        <div><div style="font-weight:800;font-size:26px;color:${e.score>=80?'var(--green)':e.score>=70?'var(--orange)':'var(--red)'}">${e.score}%</div><div class="lead" style="font-size:12px">Score</div></div>
+      </div>
+    </div>
+    <h3 class="section-title mb16">Formations assignées</h3>
+    ${formations.map(f=>`
+    <div class="card flat mb12 flex items-center gap16">
+      <div class="icon-tile it-violet-soft" style="flex:none">${icon('cap')}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700">${f.title}</div>
+        <div class="lead" style="font-size:13px;margin:4px 0">${f.format} · ${f.prog > 0 ? `Score : ${f.score}%` : 'Non commencé'}</div>
+        ${f.prog > 0 ? progressBar(f.prog) : ''}
+      </div>
+      <span class="badge-pill ${f.tone}" style="flex:none">${f.status}</span>
+    </div>`).join('')}
+    <div class="flex gap12 mt24" style="flex-wrap:wrap">
+      <button class="btn btn-primary" style="flex:1;min-width:180px" onclick="setTab('mgr-assign')">${icon('cap')} Assigner une formation</button>
+      <button class="btn btn-ghost" style="flex:1;min-width:180px" onclick="setTab('mgr-send-reminder')">${icon('bell')} Envoyer un rappel</button>
+    </div>
+  `;
+}
+
+// ---- Envoyer un rappel ----
+function mgrSendReminder(){
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('mgr-teams')">${icon('arrowleft')}</button>
+      <div><div class="h2">Envoyer un rappel</div><div class="lead mt4">Notifiez votre équipe sur leurs formations en cours.</div></div>
+    </div>
+    <div class="card">
+      <div class="field"><label>Destinataires</label>
+        <div class="flex gap8 flex-wrap mb12">
+          ${DATA.departments.map(d=>`<span class="chip" onclick="this.classList.toggle('active')">${d.name}</span>`).join('')}
+          <span class="chip active" style="background:var(--violet);color:#fff">Tous</span>
+        </div>
+      </div>
+      <div class="field"><label>Type de rappel</label>
+        <select class="inp">
+          <option>Formations en retard</option>
+          <option>Échéance proche (7 jours)</option>
+          <option>Formation obligatoire non commencée</option>
+          <option>Message personnalisé</option>
+        </select>
+      </div>
+      <div class="field"><label>Canal</label>
+        <div class="flex gap12">
+          <span class="chip active">Notification app</span>
+          <span class="chip" onclick="this.classList.toggle('active')">Email</span>
+          <span class="chip" onclick="this.classList.toggle('active')">SMS</span>
+        </div>
+      </div>
+      <div class="field"><label>Message (optionnel)</label>
+        <textarea class="inp" style="padding-left:16px;min-height:90px;resize:vertical" placeholder="Rappel : vos formations obligatoires doivent être terminées avant le 26 mai. Merci !"></textarea>
+      </div>
+      <div class="field"><label>Planification</label>
+        <select class="inp">
+          <option>Envoyer maintenant</option>
+          <option>Dans 1 heure</option>
+          <option>Demain matin (9h00)</option>
+          <option>Choisir une date…</option>
+        </select>
+      </div>
+      <div class="flex gap12 mt8">
+        <button class="btn btn-ghost" onclick="setTab('mgr-teams')">Annuler</button>
+        <button class="btn btn-primary" onclick="setTab('mgr-teams');toast('Rappel envoyé à l\\'équipe ✓')">${icon('send')} Envoyer le rappel</button>
+      </div>
+    </div>
+  `;
+}
+
+// ---- Formations en retard ----
+function mgrLateFormations(){
+  const late = DATA.employees.filter(e=>e.tone==='badge-red');
+  const all = DATA.employees;
+  return `
+    <div class="flex items-center gap16 mb24">
+      <button class="bell" onclick="setTab('mgr-teams')">${icon('arrowleft')}</button>
+      <div><div class="h2">Formations en retard</div><div class="lead mt4">${late.length} employé${late.length>1?'s':''} en retard sur leurs formations.</div></div>
+    </div>
+    <div class="card flat mb16" style="background:var(--red-light,#fff1f1);border-color:#fcc">
+      <div class="flex items-center gap12">
+        <div class="icon-tile" style="background:#fde8e8;color:var(--red);flex:none">${icon('alertuser')}</div>
+        <div>
+          <div style="font-weight:700">Action requise</div>
+          <div class="lead" style="font-size:13px">Ces employés n'ont pas complété leurs formations obligatoires avant l'échéance.</div>
+        </div>
+      </div>
+    </div>
+    ${all.map(e=>`
+    <div class="card flat mb12">
+      <div class="flex items-center gap16">
+        ${avatarEl({name:e.name},44)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700">${e.name}</div>
+          <div class="lead" style="font-size:13px;margin:4px 0">${e.poste}</div>
+          <div class="flex items-center gap12">${progressBar(e.prog)}<b style="font-size:13px">${e.prog}%</b></div>
+        </div>
+        <div style="text-align:right;flex:none">
+          <span class="badge-pill ${e.tone} mb8" style="display:block">${e.status}</span>
+          <button class="btn btn-ghost btn-sm" onclick="setEmpDetail('${e.name}')" style="font-size:12px">Voir profil</button>
+        </div>
+      </div>
+    </div>`).join('')}
+    <button class="btn btn-primary btn-block mt16" onclick="setTab('mgr-send-reminder')">${icon('bell')} Envoyer un rappel groupé</button>
   `;
 }

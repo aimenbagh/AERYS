@@ -14,7 +14,7 @@ function avatarEl(user, size=44, ring=false){
 }
 
 function bell(count=3){
-  return `<div class="bell" onclick="toast('Notifications')" style="cursor:pointer">${icon('bell')}${count?`<span class="dot">${count}</span>`:''}</div>`;
+  return `<div class="bell" onclick="openSub('notifications')" style="cursor:pointer">${icon('bell')}${count?`<span class="dot">${count}</span>`:''}</div>`;
 }
 
 // header used on mobile-style screens (greeting + bell + avatar)
@@ -24,7 +24,7 @@ function mobileGreeting(user, sub){
       <div class="h2">Bonjour ${user.name} 👋</div>
       <div class="lead mt8">${sub||''}</div>
     </div>
-    <div class="flex items-center gap12">${bell()}${avatarEl(user,52,true)}</div>
+    <div class="flex items-center gap12">${bell()}<div onclick="setProfileTab()" style="cursor:pointer">${avatarEl(user,52,true)}</div></div>
   </div>`;
 }
 

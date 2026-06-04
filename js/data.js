@@ -101,14 +101,14 @@ const DATA = {
     { icon:'calendar', tone:'it-gold-soft', label:'Sessions à venir', value:'3', unit:'sessions' },
   ],
   mgrAlerts: [
-    { icon:'alertuser', tone:'it-red', text:'5 employés en retard sur leurs formations', action:'Voir les employés' },
-    { icon:'cap', tone:'it-orange', text:'3 formations obligatoires non terminées', action:'Relancer' },
-    { icon:'mail', tone:'it-violet-soft', text:'1 demande de formation en attente de réponse du formateur', action:'Suivre la demande' },
+    { icon:'alertuser', tone:'it-red', text:'5 employés en retard sur leurs formations', action:'Voir les employés', go:'mgr-late' },
+    { icon:'cap', tone:'it-orange', text:'3 formations obligatoires non terminées', action:'Relancer', go:'mgr-send-reminder' },
+    { icon:'mail', tone:'it-violet-soft', text:'1 demande de formation en attente de réponse du formateur', action:'Suivre la demande', go:'mgr-trainers' },
   ],
   mgrQuick: [
     { icon:'userplus', tone:'it-violet', label:'Assigner une formation', go:'mgr-assign' },
     { icon:'edit', tone:'it-green', label:'Demander une formation spécifique', go:'mgr-trainers' },
-    { icon:'bell', tone:'it-gold', label:'Envoyer un rappel' },
+    { icon:'bell', tone:'it-gold', label:'Envoyer un rappel', go:'mgr-send-reminder' },
     { icon:'chartline', tone:'it-blue', label:'Voir rapport mensuel', go:'mgr-reports' },
   ],
 
@@ -199,9 +199,9 @@ const DATA = {
     { icon:'calendar', tone:'it-orange', value:'8', label:'Sessions à venir', note:'Prochain : 22/05' },
   ],
   formAI: [
-    { icon:'quiz', title:'Optimisez le quiz "Accueil client parfait"', desc:'Le taux d\u2019échec est élevé sur 2 questions clés.', action:'Voir les insights' },
-    { icon:'target', title:'Relancez le module "Service d\u2019exception"', desc:'Seulement 42% des apprenants l\u2019ont terminé.', action:'Relancer' },
-    { icon:'classvirtual', title:'Planifiez une classe virtuelle', desc:'Renforcez l\u2019engagement avec une session live.', action:'Planifier' },
+    { icon:'quiz', title:'Optimisez le quiz "Accueil client parfait"', desc:'Le taux d\u2019échec est élevé sur 2 questions clés.', action:'Voir les insights', go:'form-stats', goArg:'Quiz \u2013 Accueil client parfait' },
+    { icon:'target', title:'Relancez le module "Service d\u2019exception"', desc:'Seulement 42% des apprenants l\u2019ont terminé.', action:'Relancer', go:'form-send-reminder' },
+    { icon:'classvirtual', title:'Planifiez une classe virtuelle', desc:'Renforcez l\u2019engagement avec une session live.', action:'Planifier', go:'form-sessions' },
   ],
   formRecent: [
     { type:'Quiz', icon:'quiz', title:'Quiz – Accueil client parfait', date:'Mis à jour le 18/05/2026', learners:104, rate:'86% réussite',

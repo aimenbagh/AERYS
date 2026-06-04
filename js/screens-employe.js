@@ -91,7 +91,7 @@ function empActivities(){
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Choisissez une activité</div>
       <div class="lead mt8">Apprenez, testez vos connaissances et progressez de manière interactive.</div></div>
-      <div class="flex items-center gap12 mobile-only">${bell()}${avatarEl(u,52,true)}</div>
+      <div class="flex items-center gap12 mobile-only">${bell()}<div onclick="setProfileTab()" style="cursor:pointer">${avatarEl(u,52,true)}</div></div>
     </div>
     <div class="filters mt24 mb24">
       ${DATA.activityFilters.map(f=>`<span class="chip${f===_actFilter?' active':''}" onclick="setActFilter('${f}')">${f}</span>`).join('')}
@@ -116,7 +116,7 @@ function empActivityDetail(){
       <button class="bell" onclick="setTab('emp-activities')" style="width:42px;height:42px">${icon('arrowleft')}</button>
       <div style="text-align:center"><div class="h3">Activité interactive</div>
         <span class="badge-pill badge-violet" style="margin-top:6px">${q.title.includes('Quiz')?'Quiz':'Quiz'}</span></div>
-      <div class="flex items-center gap12">${bell()}${avatarEl(STATE.user,46,true)}</div>
+      <div class="flex items-center gap12">${bell()}<div onclick="setProfileTab()" style="cursor:pointer">${avatarEl(STATE.user,46,true)}</div></div>
     </div>
     <div class="card" style="padding:24px">
       <div class="flex between items-center mb12">
@@ -175,11 +175,36 @@ function nextQuiz(){
 }
 function openActivity(id){ STATE.tab='emp-activity-detail'; STATE.activeActivity=id; render(); }
 
+// ---- Planning state ----
+let _planWeekOffset = 0;  // 0 = current week, -1 = prev, +1 = next
+let _planActiveDay = 23;  // active day number
+
+const WEEK_BASE = [
+  { n:'Lun', d:20, dot:true }, { n:'Mar', d:21, dot:true }, { n:'Mer', d:22, dot:true },
+  { n:'Jeu', d:23, dot:true }, { n:'Ven', d:24, dot:true }, { n:'Sam', d:25, dot:false }, { n:'Dim', d:26, dot:false },
+];
+
+function getWeekData() {
+  const offset = _planWeekOffset;
+  const baseDay = 20 + offset * 7;
+  const days = WEEK_BASE.map((d, i) => ({
+    ...d,
+    d: baseDay + i,
+    active: (baseDay + i) === _planActiveDay,
+  }));
+  const month = 'mai 2026';
+  return { label: `${days[0].d} – ${days[6].d} ${month}`, days };
+}
+
+function planPrevWeek() { _planWeekOffset--; _planActiveDay = 20 + _planWeekOffset * 7; render(); }
+function planNextWeek() { _planWeekOffset++; _planActiveDay = 20 + _planWeekOffset * 7; render(); }
+function planSetDay(d) { _planActiveDay = d; render(); }
+
 // ---- Planning employé ----
 function empPlanning(){
   const u = STATE.user;
-  const w = DATA.week;
-  const days = w.days.map(d=>`<div class="week-day${d.active?' active':''}">
+  const w = getWeekData();
+  const days = w.days.map(d=>`<div class="week-day${d.active?' active':''}" onclick="planSetDay(${d.d})" style="cursor:pointer">
     <div class="wd-name">${d.n}</div><div class="wd-num">${d.d}</div>${d.dot?'<div class="wd-dot"></div>':''}</div>`).join('');
   const rows = DATA.planning.map(p=>`
     <div class="tl-row">
@@ -206,13 +231,13 @@ function empPlanning(){
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Planning de la semaine</div>
       <div class="lead mt8">Organisez vos activités et continuez à progresser.</div></div>
-      <div class="flex items-center gap12 mobile-only">${bell()}${avatarEl(u,52,true)}</div>
+      <div class="flex items-center gap12 mobile-only">${bell()}<div onclick="setProfileTab()" style="cursor:pointer">${avatarEl(u,52,true)}</div></div>
     </div>
     <div class="card mt24 mb24">
       <div class="flex between items-center mb16">
-        <button class="bell" style="width:38px;height:38px" onclick="toast('Semaine précédente')">${icon('chevleft')}</button>
+        <button class="bell" style="width:38px;height:38px" onclick="planPrevWeek()">${icon('chevleft')}</button>
         <div class="h3">${w.label}</div>
-        <button class="bell" style="width:38px;height:38px" onclick="toast('Semaine suivante')">${icon('chevright')}</button>
+        <button class="bell" style="width:38px;height:38px" onclick="planNextWeek()">${icon('chevright')}</button>
       </div>
       <div class="week-strip"><span></span>${days}<span></span></div>
     </div>
