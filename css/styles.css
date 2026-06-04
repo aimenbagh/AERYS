@@ -566,3 +566,150 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 
 /* sr only */
 .hidden { display: none !important; }
+
+/* ============================================
+   MOBILE FIXES — responsive layout corrections
+   ============================================ */
+
+/* --- Alert cards: stack vertically on mobile --- */
+@media (max-width: 768px) {
+  .alert-card-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .alert-card-row .btn { align-self: flex-end; }
+
+  /* Skill gap rows: wrap on mobile */
+  .gap-row {
+    flex-wrap: wrap;
+    gap: 10px !important;
+  }
+  .gap-row .gap-name { min-width: 0; flex: 1 1 100%; }
+  .gap-row .gap-bar { flex: 1 1 100%; }
+
+  /* Trainer cards: stack on mobile */
+  .trainer-card {
+    flex-wrap: wrap;
+    gap: 12px !important;
+  }
+  .trainer-card .tc-offer {
+    width: 100%;
+    font-size: 12.5px;
+  }
+
+  /* Type grid: 2 cols with readable tiles */
+  .type-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+  .type-tile { padding: 14px 8px !important; font-size: 12px !important; }
+  .type-tile .tt-label { font-size: 13px !important; word-break: keep-all; hyphens: none; }
+  .type-tile .tt-sub  { font-size: 11px !important; word-break: keep-all; hyphens: none; }
+
+  /* Banner grad AI: stack text and button */
+  .banner-grad {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .banner-grad .btn { width: 100%; justify-content: center; }
+
+  /* List rows: prevent label truncation */
+  .list-row .lr-label { font-size: 14px !important; line-height: 1.4; white-space: normal !important; }
+
+  /* Section headers: prevent overflow */
+  .flex.between { flex-wrap: wrap; gap: 8px; }
+
+  /* Stat cards on mobile: single column when many */
+  .kpi-row .stat-card .sc-value { font-size: 20px !important; }
+
+  /* Dept detail grid */
+  .dept-grid { grid-template-columns: 1fr 1fr !important; }
+
+  /* Prevent ANY mid-word break in card text */
+  .card, .card.flat {
+    word-break: normal !important;
+    overflow-wrap: break-word;
+    hyphens: none !important;
+  }
+
+  /* Progress bar text inline */
+  .prog-row { flex-wrap: nowrap !important; }
+
+  /* Quick action buttons: 2 cols */
+  .quick-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+@media (max-width: 480px) {
+  /* Very small: alerts as full-column */
+  .card.flat.flex.items-center.gap16 {
+    flex-wrap: wrap;
+    gap: 10px !important;
+  }
+  .card.flat.flex.items-center.gap16 > div[style*="flex:1"] {
+    flex: 1 1 calc(100% - 60px) !important;
+    min-width: 0;
+    font-size: 13.5px !important;
+    line-height: 1.45;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+  .card.flat.flex.items-center.gap16 > .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* type-grid 2 cols on tiny screens too */
+  .type-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Trainer card on tiny screen */
+  .trainer-card { flex-direction: column; align-items: flex-start !important; }
+  .trainer-card .btn { width: 100%; justify-content: center; }
+}
+
+/* --- Type tiles: never break words --- */
+.type-tile, .type-tile .tt-label, .type-tile .tt-sub,
+.type-tile > div { 
+  word-break: keep-all !important; 
+  overflow-wrap: normal !important; 
+  hyphens: none !important;
+  white-space: normal;
+}
+
+/* --- Trainer offer: show on all screens, hide label on mobile --- */
+@media (max-width: 768px) {
+  .tc-offer { display: none !important; }
+  .trainer-card { flex-wrap: nowrap; }
+  .trainer-card > div:first-of-type { min-width: 0; flex: 1; }
+}
+
+/* --- Alert text: never truncate --- */
+.alert-card-row > div[style] {
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word;
+  hyphens: none !important;
+}
+
+/* --- Section header "Voir tout" stays right --- */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.section-header-row .section-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Quick actions: 2x2 grid always on mobile --- */
+@media (max-width: 768px) {
+  .quick-actions-grid { 
+    display: grid !important; 
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 12px !important;
+  }
+}

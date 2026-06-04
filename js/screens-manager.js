@@ -25,10 +25,10 @@ function mgrDashboard(){
   }).join('');
 
   const alerts = DATA.mgrAlerts.map(a=>`
-    <div class="card flat flex items-center gap16 mb12">
-      <div class="icon-tile ${a.tone}">${icon(a.icon)}</div>
-      <div style="flex:1;font-weight:600">${a.text}</div>
-      <button class="btn btn-ghost btn-sm" onclick="${a.go?`setTab('${a.go}')`:`toast('${a.action}')`}">${a.action} ${icon('chevright')}</button>
+    <div class="card flat flex items-center gap16 mb12 alert-card-row">
+      <div class="icon-tile ${a.tone}" style="flex:none">${icon(a.icon)}</div>
+      <div style="flex:1;font-weight:600;font-size:14.5px;line-height:1.45">${a.text}</div>
+      <button class="btn btn-ghost btn-sm" style="flex:none;white-space:nowrap" onclick="${a.go?`setTab('${a.go}')`:`toast('${a.action}')`}">${a.action} ${icon('chevright')}</button>
     </div>`).join('');
 
   const quick = DATA.mgrQuick.map(q=>`
@@ -46,7 +46,7 @@ function mgrDashboard(){
       </div>
     </div>
     <div class="grid g3 mt24 mb24">${cards}</div>
-    <div class="flex between items-center mb16"><h3 class="section-title">Alertes prioritaires</h3><a class="accent" style="font-weight:700;cursor:pointer" onclick="setTab('mgr-teams')">Voir tout</a></div>
+    <div class="flex between items-center mb16" style="flex-wrap:nowrap;gap:8px"><h3 class="section-title" style="white-space:nowrap">Alertes prioritaires</h3><a class="accent" style="font-weight:700;cursor:pointer" onclick="setTab('mgr-teams')">Voir tout</a></div>
     ${alerts}
     <h3 class="section-title mt32 mb16">Actions rapides</h3>
     <div class="grid g4">${quick}</div>
@@ -297,14 +297,14 @@ function mgrTrainers(){
     </div>`).join('');
 
   const gaps = DATA.skillGaps.map(g=>`
-    <div class="flex items-center gap16" style="padding:14px 0;border-bottom:1px solid var(--grey-100)">
+    <div class="gap-row flex items-center gap16" style="padding:14px 0;border-bottom:1px solid var(--grey-100)">
       <div class="icon-tile it-violet-soft" style="flex:none">${icon(g.icon)}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:14.5px;margin-bottom:8px">${g.name}</div>
-        <div class="flex items-center gap12">${progressBar(g.v)}<b style="font-size:13px">${g.v}%</b></div>
+        <div style="font-weight:700;font-size:14.5px;margin-bottom:8px;white-space:normal">${g.name}</div>
+        <div class="flex items-center gap12">${progressBar(g.v)}<b style="font-size:13px;white-space:nowrap">${g.v}%</b></div>
       </div>
-      <span class="badge-pill ${g.ptone}" style="flex:none">${g.prio}</span>
-      <div style="text-align:center;flex:none;min-width:64px"><div style="font-weight:800;font-size:18px">${g.count}</div><div class="lead" style="font-size:12px">employés</div></div>
+      <span class="badge-pill ${g.ptone}" style="flex:none;white-space:nowrap">${g.prio}</span>
+      <div style="text-align:center;flex:none;min-width:52px"><div style="font-weight:800;font-size:18px">${g.count}</div><div class="lead" style="font-size:12px">employés</div></div>
     </div>`).join('');
 
   const trainers = DATA.recommendedTrainers.map(t=>`
@@ -315,11 +315,11 @@ function mgrTrainers(){
         <div class="lead" style="font-size:12.5px">${t.role}</div>
         <div class="flex items-center gap4" style="margin-top:4px;color:var(--gold);font-weight:700;font-size:13px"><span style="width:15px;height:15px;display:inline-flex">${icon('starfill')}</span>${t.rating}</div>
       </div>
-      <div class="desktop-only" style="flex:1.4;font-size:13px;line-height:1.5">
+      <div class="tc-offer" style="flex:1.4;font-size:13px;line-height:1.5">
         <div><b>Offre :</b> ${t.offer}</div>
         <div style="margin-top:4px"><b>Format :</b> ${t.format}</div>
       </div>
-      <button class="btn btn-ghost btn-sm" style="flex:none" onclick="toast('Offre de ${t.name}')">Voir l’offre</button>
+      <button class="btn btn-ghost btn-sm" style="flex:none" onclick="openTrainerOffer(this.dataset.name)" data-name="${t.name}">Voir l’offre</button>
     </div>`).join('');
 
   return `
@@ -341,7 +341,7 @@ function mgrTrainers(){
     <div class="banner-grad mb24 flex items-center gap16">
       <div class="icon-tile it-violet-soft" style="flex:none">${icon('sparkles')}</div>
       <div style="flex:1;font-weight:600;font-size:14px">${DATA.trainerReco}</div>
-      <button class="btn btn-ghost btn-sm" style="flex:none;background:#fff" onclick="toast('Recommandation détaillée')">Voir recommandation</button>
+      <button class="btn btn-ghost btn-sm" style="flex:none;background:#fff" onclick="openRecoDetail()">Voir recommandation</button>
     </div>
 
     <h3 class="section-title mb16">Formateurs recommandés</h3>
@@ -658,4 +658,79 @@ function selectPeriod(p){
   closeModal();
   toast('Période : ' + p);
   render();
+}
+
+// ---- Recommandation IA détaillée ----
+function openRecoDetail(){
+  openModal(`
+    <div class="flex items-center gap12 mb20">
+      <div class="icon-tile it-violet" style="flex:none">${icon('sparkles')}</div>
+      <div><div class="h3">Recommandation IA</div><div class="lead" style="font-size:13px">Analyse basée sur les résultats de mai 2026</div></div>
+    </div>
+    <div class="card flat mb16" style="background:var(--violet-soft);border-color:var(--violet-light)">
+      <div style="font-weight:700;margin-bottom:8px">Problème détecté</div>
+      <div class="lead">${DATA.trainerReco}</div>
+    </div>
+    <div style="font-weight:700;margin-bottom:12px">Indicateurs ayant déclenché cette alerte</div>
+    ${[
+      ['Score moyen gestion réclamations','54%','it-red','var(--red)'],
+      ['Taux d\'abandon sur ce module','38%','it-orange','var(--orange)'],
+      ['Employés concernés','8 / 12','it-violet-soft','var(--violet)'],
+    ].map(i=>`
+    <div class="flex items-center gap12 mb12">
+      <div class="icon-tile ${i[2]}" style="flex:none;width:42px;height:42px">${icon('chartline')}</div>
+      <div style="flex:1;font-size:14px">${i[0]}</div>
+      <b style="color:${i[3]};font-size:17px">${i[1]}</b>
+    </div>`).join('')}
+    <div style="font-weight:700;margin:16px 0 12px">Formateurs recommandés pour cette lacune</div>
+    ${DATA.recommendedTrainers.slice(0,2).map(t=>`
+    <div class="card flat flex items-center gap12 mb10 tap" onclick="closeModal();openTrainerOffer('${t.name.replace(/'/g,'\\\'')}')" style="cursor:pointer">
+      <img src="${t.photo}" style="width:44px;height:44px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">${t.name}</div><div class="lead" style="font-size:12px">${t.offer}</div></div>
+      <span style="color:var(--violet);font-size:13px;font-weight:700">Voir →</span>
+    </div>`).join('')}
+    <div class="flex gap12 mt16">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Fermer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal();setTab('mgr-request')">${icon('cap')} Lancer une demande</button>
+    </div>
+  `);
+}
+
+// ---- Offre formateur détaillée ----
+function openTrainerOffer(name){
+  const t = DATA.recommendedTrainers.find(x=>x.name===name) || DATA.recommendedTrainers[0];
+  openModal(`
+    <div class="flex items-center gap16 mb20">
+      <img src="${t.photo}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;flex:none" onerror="this.style.display='none'">
+      <div>
+        <div class="h3">${t.name}</div>
+        <div class="lead" style="font-size:13px">${t.role}</div>
+        <div class="flex items-center gap4 mt6" style="color:var(--gold);font-weight:700;font-size:13px">
+          ${icon('starfill','style="width:15px;height:15px"')} ${t.rating}
+        </div>
+      </div>
+    </div>
+    <div class="card flat mb16" style="background:var(--violet-soft);border-color:var(--violet-light)">
+      <div style="font-weight:700;margin-bottom:6px">Offre proposée</div>
+      <div class="lead">${t.offer}</div>
+      <div class="flex items-center gap8 mt10">
+        <span class="chip active" style="background:var(--violet);color:#fff">${t.format.split('+')[0].trim()}</span>
+        ${t.format.includes('+')?`<span class="chip active" style="background:var(--violet);color:#fff">${t.format.split('+')[1].trim()}</span>`:''}
+      </div>
+    </div>
+    ${[
+      ['calendar','Durée estimée','2 heures par module'],
+      ['users','Groupe recommandé','6 à 12 participants'],
+      ['clock','Disponibilité','Dès la semaine prochaine'],
+      ['star','Satisfaction moyenne','4,8/5 sur 120 formations'],
+    ].map(i=>`
+    <div class="flex items-center gap12 mb12">
+      <div class="icon-tile it-violet-soft" style="flex:none;width:40px;height:40px">${icon(i[0])}</div>
+      <div style="flex:1;font-size:14px"><span class="lead">${i[1]}</span><br><b>${i[2]}</b></div>
+    </div>`).join('')}
+    <div class="flex gap12 mt20">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Fermer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal();setTab('mgr-request');toast('Demande pré-remplie pour ${t.name}')">${icon('send')} Contacter le formateur</button>
+    </div>
+  `);
 }
