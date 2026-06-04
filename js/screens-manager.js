@@ -152,12 +152,12 @@ function mgrReports(){
 
   const deptPerf = DATA.reportDeptPerf.map(d=>`
     <tr><td style="font-weight:600">${d.name}</td>
-    <td><div class="flex items-center gap12" style="min-width:170px">${progressBar(d.comp)}<b>${d.comp}%</b></div></td>
+    <td><div class="flex items-center gap12">${progressBar(d.comp)}<b>${d.comp}%</b></div></td>
     <td style="text-align:right"><b class="${d.score>=82?'txt-green':d.score>=78?'txt-orange':'txt-red'}">${d.score}%</b></td></tr>`).join('');
 
   const skill = (arr, tone)=>arr.map(s=>`<div class="flex items-center gap12 mb12">
     <div style="flex:1;font-size:14px;font-weight:600">${s.n}</div>
-    <div style="width:130px">${progressBar(s.v, tone)}</div><b style="width:42px;text-align:right">${s.v}%</b></div>`).join('');
+    <div style="width:80px;flex-shrink:0">${progressBar(s.v, tone)}</div><b style="width:38px;text-align:right;flex-shrink:0">${s.v}%</b></div>`).join('');
 
   const mix = DATA.formationMix.map(m=>`<div class="flex items-center gap8 mb8">
     <span style="width:11px;height:11px;border-radius:3px;background:${m.c}"></span>
@@ -166,9 +166,9 @@ function mgrReports(){
   return `
     <div class="flex between" style="align-items:flex-start">
       <div><div class="h2">Rapports</div><div class="lead mt8">Analysez l\u2019impact de la formation sur la performance de vos équipes.</div></div>
-      <div class="flex items-center gap12 desktop-only">
-        <button class="btn btn-ghost btn-sm" onclick="openPeriodPicker()">${icon('calendar')} ${_reportPeriod} ${icon('chevdown')}</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">${icon('filter')} Filtres</button>
+      <div class="flex items-center gap12">
+        <button class="btn btn-ghost btn-sm" onclick="openPeriodPicker()">${icon('calendar')} <span class="desktop-only">${_reportPeriod} </span>${icon('chevdown')}</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleReportFilter()">${icon('filter')} <span class="desktop-only">Filtres</span></button>
       </div>
     </div>
     ${_reportFilterOpen ? `
@@ -198,11 +198,11 @@ function mgrReports(){
         <button class="btn btn-primary" style="width:auto" onclick="applyReportFilters()">Appliquer</button>
       </div>
     </div>` : ''}
-    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:14px" id="kpiRow">${kpis}</div>
+    <div class="grid kpi-row mt24 mb24" id="kpiRow">${kpis}</div>
     <div class="grid g2 mt24" style="gap:18px">
       <div class="card"><h3 class="section-title mb16">Évolution des formations terminées</h3>${lineChart(DATA.reportTrend)}</div>
       <div class="card"><div class="flex between items-center mb16"><h3 class="section-title">Performance par département</h3><a class="accent" style="font-weight:700;cursor:pointer" onclick="setTab('mgr-teams')">Voir tout</a></div>
-        <table class="tbl"><thead><tr><th>Département</th><th>Taux de complétion</th><th style="text-align:right">Score moyen</th></tr></thead><tbody>${deptPerf}</tbody></table></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Département</th><th>Taux de complétion</th><th style="text-align:right">Score moyen</th></tr></thead><tbody>${deptPerf}</tbody></table></div></div>
     </div>
     <div class="grid g3 mt24" style="gap:18px">
       <div class="card"><div class="flex between items-center mb16"><h3 class="section-title" style="font-size:16px">Top compétences développées</h3></div>${skill(DATA.skillsTop,'green')}</div>

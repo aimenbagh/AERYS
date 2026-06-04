@@ -181,6 +181,7 @@ let _quizAnswered = false;
 function empActivityDetail(){
   const a = DATA.activities.find(x => x.id === STATE.activeActivity);
   if(a && a.type === 'Vidéo') return empVideoDetail();
+  if(a && a.id === 'j1') return empMissionHyatt();
   return empActivityDetail_quiz();
 }
 function empActivityDetail_quiz(){

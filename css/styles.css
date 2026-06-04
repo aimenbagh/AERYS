@@ -497,18 +497,28 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 .quiz-opt.wrong .qo-mark { display: flex; background: var(--red); }
 .quiz-opt.disabled { pointer-events: none; }
 
+/* kpi row — 5 cols desktop, 2 cols mobile */
+.kpi-row { grid-template-columns: repeat(5, 1fr); gap: 14px; }
+
 /* ====================== RESPONSIVE ====================== */
 @media (max-width: 1023px) {
   .sidebar { display: none; }
   .tabbar { display: block; }
   .main { background: var(--grey-bg); }
-  .main-inner { padding: 0 0 96px; }
-  .app-mobile-pad { padding: 0 20px; }
-  .topbar { padding: 18px 20px 0; }
+  /* KEY FIX: proper left/right margin on all mobile content */
+  .main-inner { padding: 20px 16px 96px; }
+  .topbar { padding: 0; margin-bottom: 20px; }
   .page-head .ph-title { font-size: 28px; }
   .g4 { grid-template-columns: repeat(2,1fr); }
   .g3 { grid-template-columns: repeat(2,1fr); }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
   .desktop-only { display: none !important; }
+  /* ensure cards don't clip on narrow screens */
+  .card, .card.flat { overflow-wrap: break-word; word-break: break-word; }
+  /* report table: scrollable on mobile */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* stat card value smaller on mobile */
+  .stat-card .sc-value { font-size: 22px; }
 }
 @media (min-width: 1024px) {
   .mobile-only { display: none !important; }
@@ -516,8 +526,15 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 }
 @media (max-width: 560px) {
   .g2.collapse { grid-template-columns: 1fr; }
+  /* stack all multi-col grids on very small screens */
+  .g2 { grid-template-columns: 1fr; }
+  .g3 { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  /* tighter page padding on tiny phones */
+  .main-inner { padding: 16px 12px 96px; }
   .act-card .ac-thumb { width: 104px; }
   .h1 { font-size: 30px; }
+  .h2 { font-size: 22px; }
   /* shop cards: tighter padding & smaller font on very small screens */
   .shop-card .sh-body { padding: 10px 11px 12px; gap: 4px; }
   .shop-card .sh-name { font-size: 13.5px; }
@@ -525,6 +542,10 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
   .shop-card .sh-pts { font-size: 14px; gap: 5px; }
   .shop-card .sh-pts .coin { width: 18px; height: 18px; }
   .btn-sm { padding: 8px 12px; font-size: 12.5px; }
+  /* stat card values tighter */
+  .stat-card .sc-value { font-size: 20px; }
+  /* banner wraps on small screens */
+  .banner-grad { flex-direction: column; align-items: flex-start; }
 }
 
 /* desktop: show a clean status bar only in public frame */
