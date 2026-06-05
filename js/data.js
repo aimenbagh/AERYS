@@ -253,6 +253,14 @@ const DATA = {
     { name:'Sofia Benali', poste:'Guest Relations', prog:55, score:70, badges:2, status:'En retard', tone:'badge-red' },
     { name:'Khaled Nasri', poste:'Night Auditor', prog:92, score:95, badges:6, status:'À jour', tone:'badge-green' },
     { name:'Leila Hamdi', poste:'Réceptionniste', prog:40, score:60, badges:1, status:'En retard', tone:'badge-red' },
+    { name:'Nadia Cherif', poste:'Femme de chambre', prog:80, score:85, badges:4, status:'À jour', tone:'badge-green' },
+    { name:'Omar Saidi', poste:'Gouvernant', prog:64, score:74, badges:2, status:'En cours', tone:'badge-orange' },
+    { name:'Rania Touati', poste:'Serveuse', prog:78, score:82, badges:3, status:'À jour', tone:'badge-green' },
+    { name:'Yacine Boumediene', poste:'Chef de rang', prog:50, score:66, badges:2, status:'En retard', tone:'badge-red' },
+    { name:'Karim Ould', poste:'Cuisinier', prog:70, score:80, badges:3, status:'En cours', tone:'badge-orange' },
+    { name:'Samir Brahimi', poste:'Technicien de maintenance', prog:60, score:72, badges:2, status:'En cours', tone:'badge-orange' },
+    { name:'Lina Mansour', poste:'Commercial', prog:90, score:88, badges:5, status:'À jour', tone:'badge-green' },
+    { name:'Walid Ferhat', poste:'Chargé RH', prog:58, score:76, badges:2, status:'En cours', tone:'badge-orange' },
   ],
 
   // ---- Manager : rapports ----

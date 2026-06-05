@@ -130,10 +130,12 @@ function sidebar() {
   return `
     <aside class="sidebar${gold}">
       <div class="side-brand">${brand(false, 'Hyatt Regency Alger')}</div>
-      ${tabs.map(t => `
-        <div class="nav-item${active === t.id ? ' active' : ''}" onclick="setTab('${t.id}')">
-          ${icon(t.icon)}<span>${t.label}</span>
-        </div>`).join('')}
+      <div class="side-nav">
+        ${tabs.map(t => `
+          <div class="nav-item${active === t.id ? ' active' : ''}" onclick="setTab('${t.id}')">
+            ${icon(t.icon)}<span>${t.label}</span>
+          </div>`).join('')}
+      </div>
       <div class="side-foot">
         <div class="side-user mb12">
           ${avatarEl(u, 40)}
@@ -181,12 +183,23 @@ function appShell() {
 function render() {
   const root = document.getElementById('app');
   let html = '';
-  switch (STATE.screen) {
-    case 'landing':  html = screenLanding();  break;
-    case 'discover': html = screenDiscover(); break;
-    case 'login':    html = screenLogin(_loginRole); break;
-    case 'app':      html = appShell();       break;
-    default:         html = screenLanding();
+  try {
+    switch (STATE.screen) {
+      case 'landing':  html = screenLanding();  break;
+      case 'discover': html = screenDiscover(); break;
+      case 'login':    html = screenLogin(_loginRole); break;
+      case 'app':      html = appShell();       break;
+      default:         html = screenLanding();
+    }
+  } catch(e) {
+    console.error('Render error:', e);
+    // Fallback: try to render dashboard
+    try {
+      STATE.tab = STATE.role === 'manager' ? 'mgr-dashboard' : STATE.role === 'formateur' ? 'form-home' : 'emp-home';
+      html = appShell();
+    } catch(e2) {
+      html = `<div style="padding:40px;text-align:center"><div style="font-size:18px;font-weight:700;color:#5B21D6">Erreur d'affichage</div><div style="margin-top:8px;color:#666">${e.message}</div><button onclick="location.reload()" style="margin-top:20px;padding:12px 24px;background:#5B21D6;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer">Recharger</button></div>`;
+    }
   }
   root.innerHTML = html;
 }

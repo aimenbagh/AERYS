@@ -60,7 +60,7 @@ html, body {
   color: var(--navy);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
 }
 
@@ -68,7 +68,7 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
 }
 
@@ -320,12 +320,16 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 .sidebar {
   width: 264px; flex: none; background: #fff; border-right: 1px solid var(--grey-200);
   padding: 26px 18px; display: flex; flex-direction: column; gap: 6px;
-  position: sticky; top: 0; height: 100vh;
+  position: sticky; top: 0; height: 100vh; max-height: 100vh; overflow-y: auto;
+  align-self: flex-start;
+  scrollbar-width: none;
 }
-.sidebar .side-brand { padding: 4px 8px 22px; }
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar .side-brand { padding: 4px 8px 22px; flex: none; }
 .sidebar .nav-item {
   display: flex; align-items: center; gap: 13px; padding: 13px 14px; border-radius: var(--r-md);
   color: var(--grey-text); font-weight: 600; font-size: 15px; transition: .15s; cursor: pointer;
+  flex: none;
 }
 .sidebar .nav-item svg { width: 22px; height: 22px; flex: none; }
 .sidebar .nav-item:hover { background: var(--grey-100); color: var(--navy); }
@@ -734,10 +738,20 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 }
 
 /* CHART: prevent overflow, clip labels */
-.card > svg, .card svg {
+/* chart/diagram SVGs inside cards scale to fit — but NOT button/icon SVGs */
+.card > svg:not(.btn svg), .card svg:not(.btn svg) {
   display: block;
   max-width: 100%;
   overflow: visible;
+}
+/* Re-assert btn svg size with higher specificity — overrides .card svg */
+.btn svg, .card .btn svg, .card .btn svg,
+button.btn svg, a.btn svg { 
+  width: 18px !important; 
+  height: 18px !important; 
+  max-width: 18px !important;
+  flex-shrink: 0;
+  display: inline-block;
 }
 .chart-wrap {
   overflow: hidden;
@@ -793,8 +807,8 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
    ============================================ */
 
 /* FIX: html/body/app overflow */
-html, body { overflow-x: hidden; width: 100%; }
-#app { overflow-x: hidden; }
+html, body { overflow-x: clip; width: 100%; }
+#app { overflow-x: clip; }
 .main { overflow-x: hidden; }
 .main-inner { overflow-x: hidden; }
 
@@ -878,3 +892,52 @@ html, body { overflow-x: hidden; width: 100%; }
     flex: 1;
   }
 }
+
+/* ============================================
+   CRITICAL: SVG SIZE ENFORCEMENT
+   Prevent .card svg from blowing up icon sizes in buttons
+   ============================================ */
+
+/* Chart SVG only — scoped to .chart-wrap */
+.chart-wrap > svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Hard reset: card svg must NOT affect btn or bell or icon-tile */
+.card svg { max-width: none; }
+
+/* btn: always 18x18 regardless of parent */
+.btn svg { width: 18px !important; height: 18px !important; max-width: 18px !important; flex-shrink: 0 !important; }
+
+/* bell (icon-only buttons) */  
+.bell svg { width: 22px !important; height: 22px !important; max-width: 22px !important; flex-shrink: 0 !important; }
+
+/* chips */
+.chip svg { width: 15px !important; height: 15px !important; max-width: 15px !important; }
+
+/* stat-card icon tile */
+.icon-tile svg { width: 24px !important; height: 24px !important; max-width: 24px !important; }
+
+/* tabbar */
+.tab svg { width: 24px !important; height: 24px !important; max-width: 24px !important; }
+
+/* nav sidebar */
+.nav-item svg { width: 22px !important; height: 22px !important; max-width: 22px !important; }
+
+/* list-row icon */
+.lr-icon svg { width: 20px !important; height: 20px !important; max-width: 20px !important; }
+
+/* Sidebar nav scroll fix: brand stays at top, footer at bottom, nav items scroll if needed */
+.sidebar .side-nav {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+.sidebar .side-nav::-webkit-scrollbar { display: none; }

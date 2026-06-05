@@ -264,7 +264,47 @@ function mgrPlanning(){
 }
 
 // ---- Assigner une formation (depuis dashboard/équipes) ----
+function checkSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>'; }
+
 function mgrAssign(){
+  const assignMode = _assignMode || 'groupe';
+  const selectedPeople = _assignPeople || [];
+  const selectedGroups = _assignGroups || [];
+
+  const peopleChips = DATA.employees.map((e,i)=>{
+    const sel = selectedPeople.includes(e.name);
+    const isLast = i === DATA.employees.length - 1;
+    return `<div class="assign-person-chip${sel?' selected':''}" onclick="toggleAssignPerson('${e.name}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:${isLast?'none':'1px solid var(--grey-100)'};background:${sel?'var(--violet-soft)':'transparent'};cursor:pointer;transition:background .15s">
+      <div style="width:38px;height:38px;border-radius:50%;background:${sel?'var(--violet)':'var(--violet-soft)'};color:${sel?'#fff':'var(--violet)'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none;transition:all .15s">${e.name[0]}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14.5px;color:var(--navy)">${e.name}</div>
+        <div style="font-size:12.5px;color:var(--grey-text);margin-top:2px">${e.poste}</div>
+      </div>
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${sel?'var(--violet)':'var(--grey-200)'};background:${sel?'var(--violet)':'transparent'};display:flex;align-items:center;justify-content:center;flex:none;transition:all .15s">
+        ${sel?checkSvg():""}
+      </div>
+    </div>`;
+  }).join('');
+
+  const groupChips = DATA.departments.map((d,i)=>{
+    const sel = selectedGroups.includes(d.name);
+    const isLast = i === DATA.departments.length - 1;
+    return `<div onclick="toggleAssignGroup('${d.name}')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:${isLast?'none':'1px solid var(--grey-100)'};background:${sel?'var(--violet-soft)':'transparent'};cursor:pointer;transition:background .15s">
+      <div class="icon-tile ${sel?'it-violet':'it-violet-soft'}" style="width:40px;height:40px;flex:none">${icon(d.icon)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14.5px;color:var(--navy)">${d.name}</div>
+        <div style="font-size:12.5px;color:var(--grey-text);margin-top:2px">${d.count} employés</div>
+      </div>
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${sel?'var(--violet)':'var(--grey-200)'};background:${sel?'var(--violet)':'transparent'};display:flex;align-items:center;justify-content:center;flex:none;transition:all .15s">
+        ${sel?checkSvg():""}
+      </div>
+    </div>`;
+  }).join('');
+
+  const totalSelected = assignMode==='groupe'
+    ? selectedGroups.length > 0 ? `${selectedGroups.length} groupe${selectedGroups.length>1?'s':''} sélectionné${selectedGroups.length>1?'s':''}` : 'Aucun groupe sélectionné'
+    : selectedPeople.length > 0 ? `${selectedPeople.length} employé${selectedPeople.length>1?'s':''} sélectionné${selectedPeople.length>1?'s':''}` : 'Personne sélectionnée';
+
   return `
     <div class="flex items-center gap16 mb24">
       <button class="bell" onclick="setTab('mgr-teams')">${icon('arrowleft')}</button>
@@ -274,11 +314,49 @@ function mgrAssign(){
       <div class="field"><label>Formation</label><select class="inp">
         <option>Accueil client parfait (Quiz)</option><option>Gestion des réclamations (Simulation)</option>
         <option>Mission Hyatt (Jeu)</option><option>5 clés du service Hyatt (Micro-learning)</option></select></div>
-      <div class="field"><label>Département cible</label><select class="inp">
-        ${DATA.departments.map(d=>`<option>${d.name}</option>`).join('')}<option>Tous les départements</option></select></div>
+
+      <!-- DESTINATAIRES -->
+      <div class="field">
+        <label>Destinataires</label>
+        <!-- Mode switcher -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;background:var(--grey-bg);border-radius:14px;padding:4px">
+          <button onclick="setAssignMode('groupe')" style="flex:1;padding:10px 14px;border-radius:12px;border:none;font-weight:700;font-size:13.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:${assignMode==='groupe'?'#fff':'transparent'};color:${assignMode==='groupe'?'var(--violet)':'var(--grey-text)'};box-shadow:${assignMode==='groupe'?'0 2px 8px rgba(91,33,214,.12)':'none'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;flex:none"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+            Par groupe
+          </button>
+          <button onclick="setAssignMode('personne')" style="flex:1;padding:10px 14px;border-radius:12px;border:none;font-weight:700;font-size:13.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:${assignMode==='personne'?'#fff':'transparent'};color:${assignMode==='personne'?'var(--violet)':'var(--grey-text)'};box-shadow:${assignMode==='personne'?'0 2px 8px rgba(91,33,214,.12)':'none'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;flex:none"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/></svg>
+            Par personne
+          </button>
+        </div>
+
+        <!-- Group list -->
+        <div style="display:${assignMode==='groupe'?'block':'none'}">
+          <div style="border:1.5px solid var(--grey-100);border-radius:16px;overflow:hidden;background:#fff">
+            ${groupChips}
+          </div>
+          <button onclick="toggleAssignGroup('Tous les départements')" style="width:100%;padding:11px 16px;border-radius:12px;border:1.5px dashed var(--violet-light);background:transparent;color:var(--violet);font-weight:700;font-size:13px;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;flex:none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Sélectionner tous les départements
+          </button>
+        </div>
+
+        <!-- People list -->
+        <div style="display:${assignMode==='personne'?'block':'none'}">
+          <div class="input-wrap mb12">${icon('search','class="lead-icon"')}<input class="inp" placeholder="Rechercher un employé..." oninput="filterAssignSearch(this.value)"></div>
+          <div id="assignPeopleList" style="border:1.5px solid var(--grey-100);border-radius:16px;overflow:hidden;background:#fff">${peopleChips}</div>
+        </div>
+
+        <!-- Summary pill -->
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:var(--violet-soft);border:1.5px solid var(--violet-light);margin-top:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2.5" style="width:18px;height:18px;flex:none"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+          <span style="font-weight:700;font-size:14px;color:var(--violet)">${totalSelected}</span>
+        </div>
+      </div>
+
       <div class="field"><label>Date limite</label><div class="input-wrap">${icon('calendar','class="lead-icon"')}<input class="inp" type="text" value="26 mai 2026"></div></div>
       <div class="field"><label>Type</label>
-        <div class="flex gap12"><span class="chip active">Obligatoire</span><span class="chip">Recommandée</span><span class="chip">Optionnelle</span></div></div>
+        <div class="flex gap12"><span class="chip active" onclick="this.classList.toggle('active')">Obligatoire</span><span class="chip" onclick="this.classList.toggle('active')">Recommandée</span><span class="chip" onclick="this.classList.toggle('active')">Optionnelle</span></div></div>
       <div class="field"><label>Message (optionnel)</label>
         <textarea class="inp" style="padding-left:16px;min-height:90px;resize:vertical" placeholder="Ajoutez un message pour vos équipes..."></textarea></div>
       <div class="flex gap12 mt16">
@@ -287,6 +365,37 @@ function mgrAssign(){
       </div>
     </div>
   `;
+}
+
+// ---- Assign state ----
+let _assignMode = 'groupe';
+let _assignPeople = [];
+let _assignGroups = [];
+
+function setAssignMode(mode){ _assignMode = mode; render(); }
+function toggleAssignPerson(name){
+  _assignPeople = _assignPeople.includes(name)
+    ? _assignPeople.filter(x=>x!==name)
+    : [..._assignPeople, name];
+  render();
+}
+function toggleAssignGroup(name){
+  if(name==='Tous les départements'){
+    _assignGroups = _assignGroups.length===DATA.departments.length ? [] : DATA.departments.map(d=>d.name);
+  } else {
+    _assignGroups = _assignGroups.includes(name)
+      ? _assignGroups.filter(x=>x!==name)
+      : [..._assignGroups, name];
+  }
+  render();
+}
+function filterAssignSearch(val){
+  const list = document.getElementById('assignPeopleList');
+  if(!list) return;
+  list.querySelectorAll('.assign-person-chip').forEach(el=>{
+    const name = el.querySelector('div > div').textContent.toLowerCase();
+    el.style.display = name.includes(val.toLowerCase()) ? '' : 'none';
+  });
 }
 
 // ---- Rapports & Formateurs (détection des besoins) ----
