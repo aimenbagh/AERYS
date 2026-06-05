@@ -387,7 +387,7 @@ function empRewards(){
       </div>
       <div class="flex items-center gap12" style="border-left:1px solid rgba(255,255,255,.3);padding-left:20px">
         <div class="icon-tile" style="background:rgba(255,255,255,.18);color:#fff">${icon('crown')}</div>
-        <div><div style="opacity:.85;font-size:13px">Niveau actuel</div><div style="font-weight:800">${STATE.user.level}</div></div>
+        <div style="min-width:0"><div style="opacity:.85;font-size:13px">Niveau actuel</div><div style="font-weight:800;white-space:normal;line-height:1.3;font-size:13.5px">${STATE.user.level}</div></div>
       </div>
     </div>
     <h3 class="section-title mb16">Explorer la boutique</h3>
@@ -459,7 +459,7 @@ function empProfile(){
       </div>
       <div class="flex items-center gap12" style="flex:1;padding-left:20px">
         <span class="accent">${icon('chartline')}</span>
-        <div><div class="lead" style="font-size:13px">Niveau actuel</div><div style="font-family:var(--font-display);font-weight:800;font-size:18px">${u.level}</div></div>
+        <div style="min-width:0;flex:1"><div class="lead" style="font-size:13px">Niveau actuel</div><div style="font-family:var(--font-display);font-weight:800;font-size:16px;white-space:normal;line-height:1.25">${u.level}</div></div>
       </div>
     </div>
     <div class="card mt24" style="padding:6px 16px">

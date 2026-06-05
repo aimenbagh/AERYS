@@ -787,3 +787,94 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
   .stat-card .sc-value { font-size: 22px !important; }
   .stat-card .sc-label { font-size: 11.5px !important; }
 }
+
+/* ============================================
+   MOBILE FIXES v3
+   ============================================ */
+
+/* FIX: html/body/app overflow */
+html, body { overflow-x: hidden; width: 100%; }
+#app { overflow-x: hidden; }
+.main { overflow-x: hidden; }
+.main-inner { overflow-x: hidden; }
+
+/* FIX: type-grid always responsive */
+.type-grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)) !important; }
+
+/* FIX: Planning — notification banner stacks on mobile */
+@media (max-width: 768px) {
+  .card.flat[style*="gold-light"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .card.flat[style*="gold-light"] .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  /* Planning week-strip: smaller day tiles */
+  .week-day { min-width: 36px !important; padding: 8px 4px !important; }
+  .wd-num { font-size: 18px !important; }
+  .wd-name { font-size: 10px !important; }
+}
+
+/* FIX: Profile — points/level card row */
+.profile-pts-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+.profile-pts-row > div {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+}
+.profile-pts-row > div + div {
+  border-left: 1px solid var(--grey-100);
+}
+@media (max-width: 480px) {
+  .profile-pts-row { flex-direction: row; }
+  .profile-pts-row > div { padding: 12px 10px; }
+}
+
+/* FIX: Reports activity rows — icon never overlaps text */
+.activity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.activity-row .activity-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.activity-row .activity-label svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.activity-row .activity-label span {
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 0;
+  word-break: normal;
+}
+.activity-row b {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* FIX: all inline flex items — prevent icon overlap on narrow screens */
+@media (max-width: 768px) {
+  .flex.items-center.gap12 > .accent {
+    flex-shrink: 0;
+  }
+  .flex.items-center.gap12 > span[style*="font-weight:600"] {
+    min-width: 0;
+    flex: 1;
+  }
+}

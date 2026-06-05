@@ -216,7 +216,7 @@ function mgrReports(){
           <div class="flex between items-center mb12" style="padding-bottom:12px;border-bottom:1px solid var(--grey-100)"><span style="font-weight:600;font-size:14px">${i[0]}</span><span class="txt-green" style="font-weight:700">▲ ${i[1]}</span></div>`).join('')}</div>
       <div class="card"><h3 class="section-title mb16" style="font-size:16px">Activité des formations</h3>
         ${[['calendar','Sessions planifiées','18'],['checkcircle','Sessions réalisées','15'],['users','Taux de participation','82%'],['clock','Abandons','8%']].map(i=>`
-          <div class="flex between items-center mb12"><div class="flex items-center gap12"><span class="accent">${icon(i[0])}</span><span style="font-weight:600;font-size:14px">${i[1]}</span></div><b>${i[2]}</b></div>`).join('')}</div>
+          <div class="flex between items-center mb14" style="gap:8px"><div class="flex items-center gap10" style="min-width:0;flex:1"><span class="accent" style="flex:none;display:inline-flex">${icon(i[0])}</span><span style="font-weight:600;font-size:14px;min-width:0">${i[1]}</span></div><b style="flex:none;white-space:nowrap">${i[2]}</b></div>`).join('')}</div>
       <div class="card"><h3 class="section-title mb12" style="font-size:16px">Export des rapports</h3><div class="lead mb16" style="font-size:13px">Téléchargez ou partagez vos rapports.</div>
         <button class="btn btn-ghost mb12" onclick="toast('Export PDF généré')"><span class="txt-red">${icon('filepdf')}</span> Exporter PDF</button>
         <button class="btn btn-ghost mb12" onclick="toast('Export Excel généré')"><span class="txt-green">${icon('fileexcel')}</span> Exporter Excel</button>
@@ -231,11 +231,13 @@ function mgrPlanning(){
   const days = w.days.map(d=>`<div class="week-day${d.active?' active':''}" onclick="planSetDay(${d.d})" style="cursor:pointer">
     <div class="wd-name">${d.n}</div><div class="wd-num">${d.d}</div>${d.dot?'<div class="wd-dot"></div>':''}</div>`).join('');
   const sessions = DATA.sessions.map(s=>`
-    <div class="card flat flex items-center gap16 mb12">
-      <div class="icon-tile it-violet-soft">${icon('classvirtual')}</div>
-      <div style="flex:1"><div class="h3" style="font-size:16px">${s.title}</div>
-        <div class="lead mt8" style="font-size:13px">${s.date} · ${s.time} · ${s.dur} · ${s.dept} · ${s.tool}</div></div>
-      <span class="badge-pill badge-violet">${s.enrolled} inscrits</span>
+    <div class="card flat mb12" style="padding:16px">
+      <div class="flex items-center gap12 mb10">
+        <div class="icon-tile it-violet-soft" style="width:40px;height:40px;flex:none">${icon('classvirtual')}</div>
+        <div class="h3" style="font-size:15px;flex:1;min-width:0">${s.title}</div>
+        <span class="badge-pill badge-violet" style="flex:none;white-space:nowrap">${s.enrolled} inscrits</span>
+      </div>
+      <div class="lead" style="font-size:12.5px;padding-left:52px">${s.date} · ${s.time} · ${s.dur} · ${s.dept} · ${s.tool}</div>
     </div>`).join('');
   return `
     <div class="h2">Planning des formations</div>
