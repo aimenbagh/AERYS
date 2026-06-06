@@ -288,34 +288,80 @@ function openActivity(id){
 
 // ---- Planning state ----
 let _planWeekOffset = 0;  // 0 = current week, -1 = prev, +1 = next
-let _planActiveDay = 23;  // active day number
 
-const WEEK_BASE = [
-  { n:'Lun', d:20, dot:true }, { n:'Mar', d:21, dot:true }, { n:'Mer', d:22, dot:true },
-  { n:'Jeu', d:23, dot:true }, { n:'Ven', d:24, dot:true }, { n:'Sam', d:25, dot:false }, { n:'Dim', d:26, dot:false },
-];
+// Base week anchor: Monday 18 May 2026
+const PLAN_ANCHOR = new Date(2026, 4, 18); // month is 0-indexed, 4 = May
 
-function getWeekData() {
-  const offset = _planWeekOffset;
-  const baseDay = 20 + offset * 7;
-  const days = WEEK_BASE.map((d, i) => ({
-    ...d,
-    d: baseDay + i,
-    active: (baseDay + i) === _planActiveDay,
-  }));
-  const month = 'mai 2026';
-  return { label: `${days[0].d} – ${days[6].d} ${month}`, days };
+const DAY_NAMES = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const DAY_NAMES_SHORT = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']; // Mon-Sun order
+
+// Days that have activity dots (by date string "YYYY-MM-DD")
+const PLAN_DOTS = new Set(['2026-05-18','2026-05-19','2026-05-20','2026-05-21','2026-05-22']);
+
+let _planActiveDate = new Date(2026, 4, 20); // Wednesday 20 May as default active
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
 }
 
-function planPrevWeek() { _planWeekOffset--; _planActiveDay = 20 + _planWeekOffset * 7; render(); }
-function planNextWeek() { _planWeekOffset++; _planActiveDay = 20 + _planWeekOffset * 7; render(); }
-function planSetDay(d) { _planActiveDay = d; render(); }
+function toKey(date) {
+  return date.toISOString().slice(0,10);
+}
+
+function formatMonth(date) {
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function getWeekData() {
+  const monday = addDays(PLAN_ANCHOR, _planWeekOffset * 7);
+  const days = DAY_NAMES_SHORT.map((n, i) => {
+    const date = addDays(monday, i);
+    const key = toKey(date);
+    return {
+      n,
+      d: date.getDate(),
+      date,
+      dot: PLAN_DOTS.has(key),
+      active: toKey(date) === toKey(_planActiveDate),
+    };
+  });
+
+  const sunday = days[6].date;
+  // Show month range label
+  let label;
+  if (monday.getMonth() === sunday.getMonth()) {
+    label = `${monday.getDate()} – ${sunday.getDate()} ${formatMonth(monday)}`;
+  } else {
+    label = `${monday.getDate()} ${formatMonth(monday)} – ${sunday.getDate()} ${formatMonth(sunday)}`;
+  }
+
+  return { label, days };
+}
+
+function planPrevWeek() {
+  _planWeekOffset--;
+  _planActiveDate = addDays(PLAN_ANCHOR, _planWeekOffset * 7);
+  render();
+}
+function planNextWeek() {
+  _planWeekOffset++;
+  _planActiveDate = addDays(PLAN_ANCHOR, _planWeekOffset * 7);
+  render();
+}
+function planSetDay(dateStr) {
+  const [y,m,d] = dateStr.split('-').map(Number);
+  _planActiveDate = new Date(y, m-1, d);
+  render();
+}
 
 // ---- Planning employé ----
 function empPlanning(){
   const u = STATE.user;
   const w = getWeekData();
-  const days = w.days.map(d=>`<div class="week-day${d.active?' active':''}" onclick="planSetDay(${d.d})" style="cursor:pointer">
+  const days = w.days.map(d=>`<div class="week-day${d.active?' active':''}" onclick="planSetDay('${toKey(d.date)}')" style="cursor:pointer">
     <div class="wd-name">${d.n}</div><div class="wd-num">${d.d}</div>${d.dot?'<div class="wd-dot"></div>':''}</div>`).join('');
   const rows = DATA.planning.map(p=>`
     <div class="tl-row">
