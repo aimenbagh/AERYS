@@ -464,7 +464,7 @@ textarea.inp:focus { outline: none; border-color: var(--violet); box-shadow: 0 0
 
 /* hero image */
 .hero-img { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--sh-md); }
-.hero-img img { width: 100%; height: 100%; object-fit: cover; }
+.hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
 
 /* dotted decoration */
 .dots-deco { display: grid; grid-template-columns: repeat(5, 6px); gap: 12px; }
